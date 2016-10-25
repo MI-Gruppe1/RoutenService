@@ -1,0 +1,41 @@
+Geocoding:
+
+https://maps.googleapis.com/maps/api/geocode/json?address=ADRESSE&key=API_KEY
+
+    ADRESSE= Adresse
+
+    API_KEY = AIzaSyDMvwHv9F7evXsKaDGdIhKNUyjsyviV4aU
+
+ABLAUF:
+1:
+Abfrage der Startadresse in Geocode:
+https://maps.googleapis.com/maps/api/geocode/json?address=STARTADRESSE&key=AIzaSyDMvwHv9F7evXsKaDGdIhKNUyjsyviV4aU
+
+Abfrage der Zieladresse in Geocode:
+https://maps.googleapis.com/maps/api/geocode/json?address=ZIELADRESSE&key=AIzaSyDMvwHv9F7evXsKaDGdIhKNUyjsyviV4aU
+
+-> Antwort analysieren mit JSON Parser
+
+2:
+Anfrage der DB mit Geokoordinaten
+Antwort -> Stationen in der Nähe
+
+3:
+Berechnung der nächsten Station
+Prüfen auf Fahrradbestand(prediction service anfragen)
+Auswahl der Stationen (start/ziel)
+
+4:
+Google Anfrage für Route
+https://maps.googleapis.com/maps/api/directions/json?
+origin=STARTADRESSE&destination=ZIELADRESSE
+&waypoints=STARTSTATION|ZIELSTATION
+&mode=bicycling
+&key=AIzaSyDMvwHv9F7evXsKaDGdIhKNUyjsyviV4aU
+
+Möglicherweise 3 Anfragen?
+Start-> Startstation(&mode=walking)
+Startstation->Zielstation(&mode=bicycling)
+Zielstation->Ziel(&mode=walking)
+
+Antwort-> Json objekt -> antwort an frontend
