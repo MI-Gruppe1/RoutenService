@@ -26,12 +26,16 @@ Prüfen auf Fahrradbestand(prediction service anfragen)
 Auswahl der Stationen (start/ziel)
 
 4:
+
+Directions KEY = AIzaSyAWbOGw9GOWPE3PgytbNiNh011aw8_L2bQ
+
 Google Anfrage für Route
 https://maps.googleapis.com/maps/api/directions/json?
 origin=STARTADRESSE&destination=ZIELADRESSE
 &waypoints=STARTSTATION|ZIELSTATION
 &mode=bicycling
-&key=AIzaSyDMvwHv9F7evXsKaDGdIhKNUyjsyviV4aU
+&key= AIzaSyAWbOGw9GOWPE3PgytbNiNh011aw8_L2bQ
+
 
 Möglicherweise 3 Anfragen?
 Start-> Startstation(&mode=walking)
