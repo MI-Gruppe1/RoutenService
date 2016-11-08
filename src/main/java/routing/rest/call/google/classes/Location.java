@@ -44,5 +44,6 @@ public class Location {
         this.lng = lng;
     }
 
+    public String toLatLongString() { return lat.toString() + "," + lng.toString(); }
 }
 

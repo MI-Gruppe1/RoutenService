@@ -21,13 +21,13 @@ public class Leg {
     private String endAddress;
     @SerializedName("end_location")
     @Expose
-    private EndLocation endLocation;
+    private Location endLocation;
     @SerializedName("start_address")
     @Expose
     private String startAddress;
     @SerializedName("start_location")
     @Expose
-    private StartLocation startLocation;
+    private Location startLocation;
     @SerializedName("steps")
     @Expose
     private List<Step> steps = new ArrayList<Step>();
@@ -97,7 +97,7 @@ public class Leg {
      * @return
      *     The endLocation
      */
-    public EndLocation getEndLocation() {
+    public Location getEndLocation() {
         return endLocation;
     }
 
@@ -106,7 +106,7 @@ public class Leg {
      * @param endLocation
      *     The end_location
      */
-    public void setEndLocation(EndLocation endLocation) {
+    public void setEndLocation(Location endLocation) {
         this.endLocation = endLocation;
     }
 
@@ -133,7 +133,7 @@ public class Leg {
      * @return
      *     The startLocation
      */
-    public StartLocation getStartLocation() {
+    public Location getStartLocation() {
         return startLocation;
     }
 
@@ -142,7 +142,7 @@ public class Leg {
      * @param startLocation
      *     The start_location
      */
-    public void setStartLocation(StartLocation startLocation) {
+    public void setStartLocation(Location startLocation) {
         this.startLocation = startLocation;
     }
 

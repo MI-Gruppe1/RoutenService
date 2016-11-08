@@ -16,7 +16,7 @@ public class Step {
     private Duration duration;
     @SerializedName("end_location")
     @Expose
-    private EndLocation endLocation;
+    private Location endLocation;
     @SerializedName("html_instructions")
     @Expose
     private String htmlInstructions;
@@ -25,7 +25,7 @@ public class Step {
     private Polyline polyline;
     @SerializedName("start_location")
     @Expose
-    private StartLocation startLocation;
+    private Location startLocation;
     @SerializedName("travel_mode")
     @Expose
     private String travelMode;
@@ -74,7 +74,7 @@ public class Step {
      * @return
      *     The endLocation
      */
-    public EndLocation getEndLocation() {
+    public Location getEndLocation() {
         return endLocation;
     }
 
@@ -83,7 +83,7 @@ public class Step {
      * @param endLocation
      *     The end_location
      */
-    public void setEndLocation(EndLocation endLocation) {
+    public void setEndLocation(Location endLocation) {
         this.endLocation = endLocation;
     }
 
@@ -128,7 +128,7 @@ public class Step {
      * @return
      *     The startLocation
      */
-    public StartLocation getStartLocation() {
+    public Location getStartLocation() {
         return startLocation;
     }
 
@@ -137,7 +137,7 @@ public class Step {
      * @param startLocation
      *     The start_location
      */
-    public void setStartLocation(StartLocation startLocation) {
+    public void setStartLocation(Location startLocation) {
         this.startLocation = startLocation;
     }
 
