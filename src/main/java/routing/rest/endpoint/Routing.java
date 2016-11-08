@@ -6,8 +6,10 @@ import routing.rest.call.google.GoogleApi;
 import routing.rest.call.google.classes.AddressConversationAnswer;
 import routing.rest.call.google.classes.Location;
 import routing.rest.call.google.classes.RoutingAnswer;
+import routing.rest.call.services.classes.Station;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static spark.Spark.*;
 
@@ -15,6 +17,8 @@ import static spark.Spark.*;
  * Created by FBeck on 08.11.2016.
  */
 public class Routing {
+    public static final double R = 6372.8;//Erdradius in km
+
     private GoogleApi google;
 
     private String geocodeKey;
@@ -55,7 +59,49 @@ public class Routing {
 
     private void askStations(Location location){}
 
-    private void orderStations(){}
+    private ArrayList<Station> orderStations(ArrayList<Station> stationen, double latWaypoint, double lngWaypoint){
+
+        ArrayList<Station> nearestStations = new ArrayList<Station>();
+        boolean firstrun = true;
+        double minDistancen = 0;
+
+        for(Station s:stationen){
+            double distanceBetween = haversine(s.getLatitude(), s.getLongitude(), latWaypoint, lngWaypoint);
+
+            if(firstrun){
+                nearestStations.add(0, s);
+                minDistancen = distanceBetween;
+                firstrun = false;
+            }else if (distanceBetween < minDistancen){
+                nearestStations.add(0, s);
+                minDistancen = distanceBetween;
+            }else{
+                for(int i = 0; i <= nearestStations.size();i++){
+                    if(distanceBetween < haversine(nearestStations.get(i).getLatitude(), nearestStations.get(i).getLongitude(), latWaypoint, lngWaypoint)){
+                        nearestStations.add(i, s);
+                    }else if(nearestStations.get(i+1).equals(null)){
+                        nearestStations.add(i+1, s);
+                    }
+                }
+            }
+        }
+
+        return nearestStations;
+    }
+
+    /*
+     * Berechnet die Entfernung zwischen zwei Punkten mit Lat/Long
+     */
+    private double haversine(double latStation, double lngStation, double latWaypoint, double lngWaypoint){
+        double dLat = Math.toRadians(latWaypoint - latStation);
+        double dLon = Math.toRadians(lngWaypoint - lngStation);
+        latStation = Math.toRadians(latStation);
+        latWaypoint = Math.toRadians(latWaypoint);
+
+        double a = Math.pow(Math.sin(dLat / 2),2) + Math.pow(Math.sin(dLon / 2),2) * Math.cos(latStation) * Math.cos(latWaypoint);
+        double c = 2 * Math.asin(Math.sqrt(a));
+        return R * c;
+    }
 
     private void findNearestStation(){}
 
@@ -74,8 +120,9 @@ public class Routing {
         Location originLocation = askDestination(origin);
         Location destinationLocation = askDestination(destination);
 
-        askStations(originLocation);
-        orderStations();
+        //askStations(originLocation);
+        orderStations(askStations(originLocation), originLocation.getLat(), originLocation.getLng());
+        orderStations(askStations(destinationLocation), destinationLocation.getLat(), destinationLocation.getLng());
         Boolean stationPossible = false;
         while(!stationPossible) {
             stationPossible = askAvailabilityForStation();

@@ -16,4 +16,16 @@ public class Station {
     @SerializedName("longitude")
     @Expose
     private Double longitude;
+
+    public String getName() {
+        return name;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
 }
