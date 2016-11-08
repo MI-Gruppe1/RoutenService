@@ -1,4 +1,4 @@
-package routing.rest.call;
+package routing.rest.call.google.classes;
 
 /**
  * Created by FBeck on 25.10.2016.
@@ -7,7 +7,7 @@ package routing.rest.call;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Southwest {
+public class Location {
 
     @SerializedName("lat")
     @Expose
