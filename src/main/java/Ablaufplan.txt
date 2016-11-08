@@ -4,15 +4,15 @@ https://maps.googleapis.com/maps/api/geocode/json?address=ADRESSE&key=API_KEY
 
     ADRESSE= Adresse
 
-    API_KEY = AIzaSyDMvwHv9F7evXsKaDGdIhKNUyjsyviV4aU
+    API_KEY = AIzaSyBGWbM5eQgLPDmGAm1qqIrnWViGfQpPbOQ
 
 ABLAUF:
 1:
 Abfrage der Startadresse in Geocode:
-https://maps.googleapis.com/maps/api/geocode/json?address=STARTADRESSE&key=AIzaSyDMvwHv9F7evXsKaDGdIhKNUyjsyviV4aU
+https://maps.googleapis.com/maps/api/geocode/json?address=STARTADRESSE&key=AIzaSyBGWbM5eQgLPDmGAm1qqIrnWViGfQpPbOQ
 
 Abfrage der Zieladresse in Geocode:
-https://maps.googleapis.com/maps/api/geocode/json?address=ZIELADRESSE&key=AIzaSyDMvwHv9F7evXsKaDGdIhKNUyjsyviV4aU
+https://maps.googleapis.com/maps/api/geocode/json?address=ZIELADRESSE&key=AIzaSyBGWbM5eQgLPDmGAm1qqIrnWViGfQpPbOQ
 
 -> Antwort analysieren mit JSON Parser
 
@@ -27,14 +27,14 @@ Auswahl der Stationen (start/ziel)
 
 4:
 
-Directions KEY = AIzaSyAWbOGw9GOWPE3PgytbNiNh011aw8_L2bQ
+Directions KEY = AIzaSyA8zzJXkWUkLcjyNPF8VQ6QFNlrvJQjhVE
 
 Google Anfrage für Route
 https://maps.googleapis.com/maps/api/directions/json?
 origin=STARTADRESSE&destination=ZIELADRESSE
 &waypoints=STARTSTATION|ZIELSTATION
 &mode=bicycling
-&key= AIzaSyAWbOGw9GOWPE3PgytbNiNh011aw8_L2bQ
+&key= AIzaSyA8zzJXkWUkLcjyNPF8VQ6QFNlrvJQjhVE
 
 
 Möglicherweise 3 Anfragen?
