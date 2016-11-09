@@ -10,6 +10,8 @@ import routing.rest.call.services.classes.Station;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import static spark.Spark.*;
 
@@ -57,11 +59,11 @@ public class Routing {
 
     }
 
-    private void askStations(Location location){}
+    private List<Station> askStations(Location location){ return new ArrayList<>();}
 
-    private ArrayList<Station> orderStations(ArrayList<Station> stationen, double latWaypoint, double lngWaypoint){
+    public List<Station> orderStations(List<Station> stationen, double latWaypoint, double lngWaypoint){
 
-        ArrayList<Station> nearestStations = new ArrayList<Station>();
+        List<Station> nearestStations = new ArrayList<Station>();
         boolean firstrun = true;
         double minDistancen = 0;
 
@@ -103,11 +105,15 @@ public class Routing {
         return R * c;
     }
 
-    private void findNearestStation(){}
+    private Station findNearestStation(List<Station> stationen, Location location){
+        return orderStations(stationen, location.getLat(), location.getLng()).get(0);
+    }
 
     private Boolean askAvailabilityForStation(){
         return true;
     }
+
+    private Boolean processAvailabilityOfStation(Station station) {return true; }
 
     private void buildRout(Location origin, Location startStation, Location destinationStation, Location destination) throws IOException {
         askRout(origin.toLatLongString(), startStation.toLatLongString(), WALKING);
@@ -121,17 +127,18 @@ public class Routing {
         Location destinationLocation = askDestination(destination);
 
         //askStations(originLocation);
-        orderStations(askStations(originLocation), originLocation.getLat(), originLocation.getLng());
-        orderStations(askStations(destinationLocation), destinationLocation.getLat(), destinationLocation.getLng());
+        List<Station> orderedOriginStations = orderStations(askStations(originLocation), originLocation.getLat(), originLocation.getLng());
+        Iterator<Station> iterator = orderedOriginStations.iterator();
         Boolean stationPossible = false;
-        while(!stationPossible) {
-            stationPossible = askAvailabilityForStation();
+        Station originStation = null;
+        while(iterator.hasNext() & !stationPossible) {
+            originStation = iterator.next();
+            stationPossible = processAvailabilityOfStation(originStation);
         }
 
-        askStations(destinationLocation);
-        findNearestStation();
+        Station destinationStation = findNearestStation(askStations(destinationLocation), destinationLocation);
 
-        buildRout(originLocation,null,null,destinationLocation);
+        buildRout(originLocation,originStation.toLocation(),destinationStation.toLocation(),destinationLocation);
 
 
         return "";
