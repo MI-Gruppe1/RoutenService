@@ -110,6 +110,7 @@ public class Routing {
     }
 
     private Boolean askAvailabilityForStation(){
+
         return true;
     }
 

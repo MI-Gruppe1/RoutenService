@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
  */
 public class RoutingTest {
     @Test
-    public void orderStations() throws Exception {
+    public void orderStationsTest() throws Exception {
         Routing routing = new Routing(null,null,null);
 
         Station station1 = new Station();
