@@ -32,7 +32,7 @@ public class RoutenService {
                 .build();
 
         GoogleApi googleApi = retrofit.create(GoogleApi.class);
-        Routing routing = new Routing(googleApi, geocodeKey, directionsKey);
+        Routing routing = new Routing(gson, googleApi, geocodeKey, directionsKey);
 
         routing.startRouting();
     }

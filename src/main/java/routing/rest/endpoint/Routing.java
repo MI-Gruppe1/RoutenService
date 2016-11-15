@@ -1,5 +1,6 @@
 package routing.rest.endpoint;
 
+import com.google.gson.Gson;
 import retrofit2.Call;
 import retrofit2.Response;
 import routing.rest.call.google.GoogleApi;
@@ -21,6 +22,7 @@ import static spark.Spark.*;
 public class Routing {
     public static final double R = 6372.8;//Erdradius in km
 
+    private Gson gson;
     private GoogleApi google;
 
     private String geocodeKey;
@@ -29,7 +31,7 @@ public class Routing {
     private String BICYCLING = "bicycling";
     private String WALKING = "walking";
 
-    public Routing(GoogleApi google, String geocodeKey, String directionsKey){
+    public Routing(Gson gson, GoogleApi google, String geocodeKey, String directionsKey){
         this.google = google;
         this.geocodeKey = geocodeKey;
         this.directionsKey = directionsKey;
@@ -43,7 +45,7 @@ public class Routing {
             origin = origin.replaceAll(" ","+");
             destination = destination.replaceAll(" ","+");
 
-            return routing(origin, destination);
+            return gson.toJson(routing(origin, destination));
         });
     }
 
@@ -53,13 +55,17 @@ public class Routing {
         return answer.body().getResults().get(0).getGeometry().getLocation();
     }
 
-    private void askRout(String origin, String destination, String mode) throws IOException {
+    private RoutingAnswer askRout(String origin, String destination, String mode) throws IOException {
         Call<RoutingAnswer> call = google.rout(origin,destination,mode, directionsKey);
         Response<RoutingAnswer> answer = call.execute();
 
+        return null;
     }
 
-    private List<Station> askStations(Location location){ return new ArrayList<>();}
+    private List<Station> askStations(Location location){
+        //TODO
+        return new ArrayList<>();
+    }
 
     public List<Station> orderStations(List<Station> stationen, double latWaypoint, double lngWaypoint){
 
@@ -105,7 +111,7 @@ public class Routing {
         return R * c;
     }
 
-    private Station findNearestStation(List<Station> stationen, Location startLocation, Location endLocation){
+    private Station findNearestStation(List<Station> stationen, Location startLocation, Location endLocation, boolean withAbailability){
         List<Station> startLocList = orderStations(stationen, startLocation.getLat(), startLocation.getLng());
         List<Station> endLocList   = orderStations(stationen, endLocation.getLat(), endLocation.getLng());
         boolean found = false;
@@ -113,48 +119,41 @@ public class Routing {
         for (int i = 0;(i <= startLocList.size())||found; i++){
             for(int j = 0; (j <= 2)||found; j++){
                 if(endLocList.get(i).getName().equals(startLocList.get(j).getName())){
-                    found = true;
-                    currentStation = startLocList.get(j);
+                    if(withAbailability && askAvailabilityForStation(endLocList.get(i))) {
+                        found = true;
+                        currentStation = endLocList.get(i);
+                    } else if(!withAbailability) {
+                        found = true;
+                        currentStation = endLocList.get(i);
+                    }
                 }
             }
         }
         return currentStation;
-//      return orderStations(stationen, location.getLat(), location.getLng()).get(0);
     }
 
-    private Boolean askAvailabilityForStation(){
-
+    private Boolean askAvailabilityForStation(Station station){
+        //TODO
         return true;
     }
 
     private Boolean processAvailabilityOfStation(Station station) {return true; }
 
-    private void buildRout(Location origin, Location startStation, Location destinationStation, Location destination) throws IOException {
-        askRout(origin.toLatLongString(), startStation.toLatLongString(), WALKING);
-        askRout(startStation.toLatLongString(), destinationStation.toLatLongString(), BICYCLING);
-        askRout(destinationStation.toLatLongString(), destination.toLatLongString(), WALKING);
+    private Rout buildRout(Location origin, Location startStation, Location destinationStation, Location destination) throws IOException {
+        RoutingAnswer startToFirst = askRout(origin.toLatLongString(), startStation.toLatLongString(), WALKING);
+        RoutingAnswer firstToSecond = askRout(startStation.toLatLongString(), destinationStation.toLatLongString(), BICYCLING);
+        RoutingAnswer secondToDestination = askRout(destinationStation.toLatLongString(), destination.toLatLongString(), WALKING);
 
+        return new Rout(startToFirst, firstToSecond, secondToDestination);
     }
 
-    private String routing(String origin, String destination) throws IOException {
+    private Rout routing(String origin, String destination) throws IOException {
         Location originLocation = askDestination(origin);
         Location destinationLocation = askDestination(destination);
 
-        //askStations(originLocation);
-        List<Station> orderedOriginStations = orderStations(askStations(originLocation), originLocation.getLat(), originLocation.getLng());
-        Iterator<Station> iterator = orderedOriginStations.iterator();
-        Boolean stationPossible = false;
-        Station originStation = null;
-        while(iterator.hasNext() & !stationPossible) {
-            originStation = iterator.next();
-            stationPossible = processAvailabilityOfStation(originStation);
-        }
+        Station originStation = findNearestStation(askStations(originLocation),originLocation,destinationLocation,true);
+        Station destinationStation = findNearestStation(askStations(destinationLocation), destinationLocation, originLocation,false);
 
-        Station destinationStation = findNearestStation(askStations(destinationLocation), destinationLocation);
-
-        buildRout(originLocation,originStation.toLocation(),destinationStation.toLocation(),destinationLocation);
-
-
-        return "";
+        return buildRout(originLocation,originStation.toLocation(),destinationStation.toLocation(),destinationLocation);
     }
 }
