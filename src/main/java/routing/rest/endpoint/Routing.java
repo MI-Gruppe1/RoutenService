@@ -105,8 +105,21 @@ public class Routing {
         return R * c;
     }
 
-    private Station findNearestStation(List<Station> stationen, Location location){
-        return orderStations(stationen, location.getLat(), location.getLng()).get(0);
+    private Station findNearestStation(List<Station> stationen, Location startLocation, Location endLocation){
+        List<Station> startLocList = orderStations(stationen, startLocation.getLat(), startLocation.getLng());
+        List<Station> endLocList   = orderStations(stationen, endLocation.getLat(), endLocation.getLng());
+        boolean found = false;
+        Station currentStation = startLocList.get(0);
+        for (int i = 0;(i <= startLocList.size())||found; i++){
+            for(int j = 0; (j <= 2)||found; j++){
+                if(endLocList.get(i).getName().equals(startLocList.get(j).getName())){
+                    found = true;
+                    currentStation = startLocList.get(j);
+                }
+            }
+        }
+        return currentStation;
+//      return orderStations(stationen, location.getLat(), location.getLng()).get(0);
     }
 
     private Boolean askAvailabilityForStation(){
