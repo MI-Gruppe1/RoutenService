@@ -42,6 +42,7 @@ public class RoutingTest {
         List orderedStations = routing.orderStationsInNewList(stationList,49.0,49.0);
 
         List rightStationsList = new ArrayList();
+        rightStationsList.add(station4);
         rightStationsList.add(station3);
         rightStationsList.add(station1);
         rightStationsList.add(station2);
