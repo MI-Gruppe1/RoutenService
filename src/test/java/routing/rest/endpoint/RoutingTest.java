@@ -28,13 +28,18 @@ public class RoutingTest {
         station3.setName("3");
         station3.setLatitude(48.9);
         station3.setLongitude(48.5);
+        Station station4 = new Station();
+        station4.setName("4");
+        station4.setLatitude(48.91);
+        station4.setLongitude(48.5);
 
         List stationList = new ArrayList();
-        //stationList.add(station2);
+        stationList.add(station2);
         stationList.add(station3);
         stationList.add(station1);
+        stationList.add(station4);
 
-        List orderedStations = routing.orderStations(stationList,49.0,49.0);
+        List orderedStations = routing.orderStationsInNewList(stationList,49.0,49.0);
 
         List rightStationsList = new ArrayList();
         rightStationsList.add(station3);

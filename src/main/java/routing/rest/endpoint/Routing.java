@@ -20,7 +20,6 @@ import static spark.Spark.*;
  * Created by FBeck on 08.11.2016.
  */
 public class Routing {
-    public static final double R = 6372.8;//Erdradius in km
 
     private Gson gson;
     private GoogleApi google;
@@ -67,53 +66,15 @@ public class Routing {
         return new ArrayList<>();
     }
 
-    public List<Station> orderStations(List<Station> stationen, double latWaypoint, double lngWaypoint){
-
-        List<Station> nearestStations = new ArrayList<Station>();
-        boolean firstrun = true;
-        double minDistancen = 0;
-
-        for(Station s:stationen){
-            double distanceBetween = haversine(s.getLatitude(), s.getLongitude(), latWaypoint, lngWaypoint);
-
-            if(firstrun){
-                nearestStations.add(0, s);
-                minDistancen = distanceBetween;
-                firstrun = false;
-            }else if (distanceBetween < minDistancen){
-                nearestStations.add(0, s);
-                minDistancen = distanceBetween;
-            }else{
-                for(int i = 0; i <= nearestStations.size();i++){
-                    if(distanceBetween < haversine(nearestStations.get(i).getLatitude(), nearestStations.get(i).getLongitude(), latWaypoint, lngWaypoint)){
-                        nearestStations.add(i, s);
-                    }else if(nearestStations.get(i+1).equals(null)){
-                        nearestStations.add(i+1, s);
-                    }
-                }
-            }
-        }
-
-        return nearestStations;
-    }
-
-    /*
-     * Berechnet die Entfernung zwischen zwei Punkten mit Lat/Long
-     */
-    private double haversine(double latStation, double lngStation, double latWaypoint, double lngWaypoint){
-        double dLat = Math.toRadians(latWaypoint - latStation);
-        double dLon = Math.toRadians(lngWaypoint - lngStation);
-        latStation = Math.toRadians(latStation);
-        latWaypoint = Math.toRadians(latWaypoint);
-
-        double a = Math.pow(Math.sin(dLat / 2),2) + Math.pow(Math.sin(dLon / 2),2) * Math.cos(latStation) * Math.cos(latWaypoint);
-        double c = 2 * Math.asin(Math.sqrt(a));
-        return R * c;
+    public List<Station> orderStationsInNewList(List<Station> stationen, double latWaypoint, double lngWaypoint){
+        List<Station> orderedStations = new ArrayList<>(stationen);
+        orderedStations.sort(new StationComparator(latWaypoint,lngWaypoint));
+        return orderedStations;
     }
 
     private Station findNearestStation(List<Station> stationen, Location startLocation, Location endLocation, boolean withAbailability){
-        List<Station> startLocList = orderStations(stationen, startLocation.getLat(), startLocation.getLng());
-        List<Station> endLocList   = orderStations(stationen, endLocation.getLat(), endLocation.getLng());
+        List<Station> startLocList = orderStationsInNewList(stationen, startLocation.getLat(), startLocation.getLng());
+        List<Station> endLocList   = orderStationsInNewList(stationen, endLocation.getLat(), endLocation.getLng());
         boolean found = false;
         Station currentStation = startLocList.get(0);
         for (int i = 0;(i <= startLocList.size())||found; i++){
