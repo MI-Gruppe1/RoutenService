@@ -1,0 +1,138 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: Uber API
+  description: Move your app forward with the Uber API
+  version: "1.0.0"
+# the domain of the service
+host: api.uber.com
+# array of all schemes that your API supports
+schemes:
+  - https
+# will be prefixed to all paths
+basePath: /maps
+produces:
+  - application/json
+paths:
+ /api/directions:
+    get:
+      summary: Search for route
+      description: Search for route
+      parameters:
+        - name: start
+          in: query
+          description: Start of the rout.
+          required: true
+          type: string
+        - name: destination
+          in: query
+          description: Destination of the rout.
+          required: true
+          type: string
+      tags:
+        - Products
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Route'
+            
+definitions:
+  Location:
+    type: object
+    properties:
+      lat:
+        type: number
+        format: double
+      lng:
+        type: number
+        format: double
+  Bounds:
+    type: object
+    properties:
+      northeast:
+        $ref: '#/definitions/Location'
+      southwest:
+        $ref: '#/definitions/Location'
+  Leg:
+    type: object
+    properties:
+      distance:
+        $ref: '#/definitions/Distance'
+      duration:
+        $ref: '#/definitions/Distance'
+      end_address:
+        type: string
+      end_location:
+        $ref: '#/definitions/Location'
+      start_address:
+       type: string
+      start_location:
+        $ref: '#/definitions/Location'
+      steps:
+        type: array
+        items:
+          $ref: '#/definitions/Step'
+      traffic_speed_entry:
+        type: array
+        items:
+          type: object
+      via_waypoint:
+        type: array
+        items:
+          type: object
+  Distance:
+    type: object
+    properties:
+      text:
+        type: string
+      value:
+        type: number
+  Step:
+   type: object
+   properties:
+    distance:
+      $ref: '#/definitions/Distance'
+    duration:
+      $ref: '#/definitions/Distance'
+    end_location:
+      $ref: '#/definitions/Location'
+    html_instructions:
+      type: string
+    polyline:
+      $ref: '#/definitions/Polyline'
+    start_location:
+      $ref: '#/definitions/Location'
+    travel_mode:
+      type: string
+    maneuver:
+      type: string
+  Polyline:
+    type: object
+    properties:
+      points:
+        type: string
+  Route:
+    type: object
+    properties:
+      bounds:
+        $ref: '#/definitions/Bounds'
+      copyrights:
+        type: string
+      legs:
+        type: array
+        items:
+          $ref: '#/definitions/Leg'
+      overview_polyline:
+          $ref: '#/definitions/Polyline'
+      summary:
+        type: string
+      warnings:
+        type: array
+        items:
+          type: string
+      waypoint_order:
+        type: array
+        items:
+          type: object
