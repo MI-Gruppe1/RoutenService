@@ -2,54 +2,55 @@ package routing.rest.endpoint;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import routing.rest.call.google.classes.RoutingAnswer;
+import routing.rest.call.google.classes.Leg;
+import routing.rest.call.google.classes.Route;
 
 /**
  * Created by FBeck on 15.11.2016.
  */
-public class Rout {
+public class WholeRoute {
 
     @SerializedName("startToFirst")
     @Expose
-    private RoutingAnswer startToFirst;
+    private Route startToFirst;
 
     @SerializedName("firstToSecond")
     @Expose
-    private RoutingAnswer firstToSecond;
+    private Route firstToSecond;
 
     @SerializedName("SecondToDestination")
     @Expose
-    private RoutingAnswer SecondToDestination;
+    private Route SecondToDestination;
 
-    public Rout(){}
+    public WholeRoute(){}
 
-    public Rout(RoutingAnswer startToFirst, RoutingAnswer firstToSecond, RoutingAnswer secondToDestination) {
+    public WholeRoute(Route startToFirst, Route firstToSecond, Route secondToDestination) {
         this.startToFirst = startToFirst;
         this.firstToSecond = firstToSecond;
         SecondToDestination = secondToDestination;
     }
 
-    public RoutingAnswer getStartToFirst() {
+    public Route getStartToFirst() {
         return startToFirst;
     }
 
-    public void setStartToFirst(RoutingAnswer startToFirst) {
+    public void setStartToFirst(Route startToFirst) {
         this.startToFirst = startToFirst;
     }
 
-    public RoutingAnswer getFirstToSecond() {
+    public Route getFirstToSecond() {
         return firstToSecond;
     }
 
-    public void setFirstToSecond(RoutingAnswer firstToSecond) {
+    public void setFirstToSecond(Route firstToSecond) {
         this.firstToSecond = firstToSecond;
     }
 
-    public RoutingAnswer getSecondToDestination() {
+    public Route getSecondToDestination() {
         return SecondToDestination;
     }
 
-    public void setSecondToDestination(RoutingAnswer secondToDestination) {
+    public void setSecondToDestination(Route secondToDestination) {
         SecondToDestination = secondToDestination;
     }
 }

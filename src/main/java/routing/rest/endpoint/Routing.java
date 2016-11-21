@@ -11,7 +11,6 @@ import routing.rest.call.services.classes.Station;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static spark.Spark.*;
@@ -100,15 +99,15 @@ public class Routing {
 
     private Boolean processAvailabilityOfStation(Station station) {return true; }
 
-    private Rout buildRout(Location origin, Location startStation, Location destinationStation, Location destination) throws IOException {
+    private WholeRoute buildRout(Location origin, Location startStation, Location destinationStation, Location destination) throws IOException {
         RoutingAnswer startToFirst = askRout(origin.toLatLongString(), startStation.toLatLongString(), WALKING);
         RoutingAnswer firstToSecond = askRout(startStation.toLatLongString(), destinationStation.toLatLongString(), BICYCLING);
         RoutingAnswer secondToDestination = askRout(destinationStation.toLatLongString(), destination.toLatLongString(), WALKING);
 
-        return new Rout(startToFirst, firstToSecond, secondToDestination);
+        return new WholeRoute(startToFirst.getRoutes().get(0), firstToSecond.getRoutes().get(0), secondToDestination.getRoutes().get(0));
     }
 
-    private Rout routing(String origin, String destination) throws IOException {
+    private WholeRoute routing(String origin, String destination) throws IOException {
         Location originLocation = askDestination(origin);
         Location destinationLocation = askDestination(destination);
 

@@ -36,7 +36,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/Route'
+            $ref: '#/definitions/WholeRoute'
             
 definitions:
   Location:
@@ -136,3 +136,12 @@ definitions:
         type: array
         items:
           type: object
+  WholeRoute:
+    type: object
+    properties:
+      startToFirst:
+        $ref: '#/definitions/Route'
+      firstToSecond:
+        $ref: '#/definitions/Route'
+      SecondToDestination:
+        $ref: '#/definitions/Route'
