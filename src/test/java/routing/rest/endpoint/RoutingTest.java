@@ -1,12 +1,24 @@
 package routing.rest.endpoint;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.junit.Test;
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import routing.rest.call.google.GoogleApi;
+import routing.rest.call.google.classes.AddressConversationAnswer;
+import routing.rest.call.services.PredictionService;
+import routing.rest.call.services.RadDB;
+import routing.rest.call.services.classes.Prediction;
 import routing.rest.call.services.classes.Station;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static spark.Spark.get;
 
 /**
  * Created by FBeck on 09.11.2016.
@@ -50,4 +62,39 @@ public class RoutingTest {
         assertEquals(rightStationsList,orderedStations);
     }
 
+    /*@Test
+    public void predictionServiceTest() throws Exception {
+        Routing routing = new Routing(null, null, null, null);
+
+        Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://localhost:9999/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+        PredictionService predictionService = retrofit.create(PredictionService.class);
+
+        get("https://localhost:9999/testP", (req, res) -> {
+            List<Integer> list = new ArrayList();
+            list.add(1);
+            list.add(2);
+            list.add(3);
+            list.add(4);
+
+            return gson.toJson(new Prediction(list));
+        });
+
+
+
+        Call<Prediction> call = predictionService.getPrediction("hallo");
+        Response<Prediction> answer = call.execute();
+    }*/
+
+    @Test
+    public void radDBServiceTest() throws Exception {
+        Routing routing = new Routing(null, null, null, null);
+    }
 }

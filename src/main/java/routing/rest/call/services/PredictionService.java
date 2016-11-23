@@ -3,6 +3,7 @@ package routing.rest.call.services;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
+import routing.rest.call.services.classes.Prediction;
 import routing.rest.call.services.classes.Station;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  */
 public interface PredictionService {
 
-    @GET("maps/api/geocode/json")
-    Call<ArrayList<Station>> getPrediction(@Query("name") String name);
+    @GET("testP")
+    Call<Prediction> getPrediction(@Query("name") String name);
 
 }

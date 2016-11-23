@@ -13,7 +13,7 @@ import java.util.DoubleSummaryStatistics;
  */
 public interface RadDB {
 
-    @GET("maps/api/geocode/json")
+    @GET("testS")
     Call<ArrayList<Station>> getStations(@Query("x") int x, @Query("lat") Double lat, @Query("long") Double lng);
 
 }

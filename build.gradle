@@ -1,22 +1,40 @@
 group 'RoutenService'
 version '0.0.1'
 
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:2.6.1'
+    }
+}
+
 apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'com.bmuschko.docker-remote-api'
 
 /**
- * Define source and target java version compatibility
+ * Define the name and version of the resulting jar file
  */
+jar {
+    baseName = 'RoutenService'
+    version = '0.0.1'
+}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 group = 'Routing'
 
-
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-
 // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
 
@@ -29,11 +47,4 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
-/**
- * Define the name and version of the resulting jar file
- */
-jar {
-    baseName = 'RoutenService'
-    version = '0.0.1'
-}
 

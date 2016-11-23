@@ -14,5 +14,15 @@ public class Prediction {
     @Expose
     private List<Integer> prediction;
 
+    public Prediction(List<Integer> prediction) {
+        this.prediction = prediction;
+    }
 
+    public List<Integer> getPrediction() {
+        return prediction;
+    }
+
+    public void setPrediction(List<Integer> prediction) {
+        this.prediction = prediction;
+    }
 }
