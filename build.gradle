@@ -64,3 +64,13 @@ dependencies {
 //    inputDir = project.file('Dockerfile')
 //    tag = 'RoutenService'
 //}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Version': version,
+                'Main-Class': 'routing.RoutenService'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
