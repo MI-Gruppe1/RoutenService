@@ -21,6 +21,9 @@ apply plugin: 'com.bmuschko.docker-remote-api'
  * Define the name and version of the resulting jar file
  */
 jar {
+    manifest {
+        attributes 'Main-Class': 'routing.RoutenService'
+    }
     baseName = 'RoutenService'
     version = '0.0.1'
 }
@@ -47,4 +50,17 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
+//import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+//import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
+//task createDockerfile(type: Dockerfile) {
+//    destFile = project.file('Dockerfile')
+//    from 'openjdk:8 '
+//    maintainer 'Rutkay Kuepelikilinc'
+//}
+
+//task buildImage(type: DockerBuildImage) {
+//    dependsOn createDockerfile
+//    inputDir = project.file('Dockerfile')
+//    tag = 'RoutenService'
+//}
