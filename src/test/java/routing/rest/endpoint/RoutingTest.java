@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static spark.Spark.get;
+import static spark.Spark.port;
 
 /**
  * Created by FBeck on 09.11.2016.
@@ -26,7 +27,7 @@ import static spark.Spark.get;
 public class RoutingTest {
     @Test
     public void orderStationsTest() throws Exception {
-        Routing routing = new Routing(null, null, null, null);
+        Routing routing = new Routing(null, null, null, null, null);
 
         Station station1 = new Station();
         station1.setName("1");
@@ -62,39 +63,41 @@ public class RoutingTest {
         assertEquals(rightStationsList,orderedStations);
     }
 
-    /*@Test
+    @Test
     public void predictionServiceTest() throws Exception {
-        Routing routing = new Routing(null, null, null, null);
+        Routing routing = new Routing("https://localhost:9999/", "https://localhost:9999/", "https://localhost:9999/", null, null);
 
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://localhost:9999/")
+                .baseUrl("http://localhost:9999/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
         PredictionService predictionService = retrofit.create(PredictionService.class);
 
-        get("https://localhost:9999/testP", (req, res) -> {
-            List<Integer> list = new ArrayList();
-            list.add(1);
-            list.add(2);
-            list.add(3);
-            list.add(4);
+        List<Integer> list = new ArrayList();
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
 
+        port(9999);
+        get("/testP", (req, res) -> {
             return gson.toJson(new Prediction(list));
         });
 
-
+        Thread.sleep(300);
 
         Call<Prediction> call = predictionService.getPrediction("hallo");
         Response<Prediction> answer = call.execute();
-    }*/
+        assertEquals(list, answer.body().getPrediction());
+    }
 
-    @Test
+    /*@Test
     public void radDBServiceTest() throws Exception {
         Routing routing = new Routing(null, null, null, null);
-    }
+    }*/
 }

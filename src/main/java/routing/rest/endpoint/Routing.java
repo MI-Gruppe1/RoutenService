@@ -88,7 +88,7 @@ public class Routing {
         Call<RoutingAnswer> call = google.rout(origin, destination, mode, directionsKey);
         Response<RoutingAnswer> answer = call.execute();
 
-        return null;
+        return answer.body();
     }
 
     private List<Station> askStations(Location location) throws IOException {
@@ -124,7 +124,7 @@ public class Routing {
         return currentStation;
     }
 
-    private Boolean askAvailabilityForStation(Station station) throws IOException {
+    public Boolean askAvailabilityForStation(Station station) throws IOException {
         Call<Prediction> call = predictionService.getPrediction(station.getName());
         Response<Prediction> response = call.execute();
         if (response.body().getPrediction().get(0) >= 5) {
