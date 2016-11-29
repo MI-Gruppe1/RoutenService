@@ -3,6 +3,13 @@
   "AttachStdin": true,
   "OpenStdin": true,
   "HostConfig": {
-    "PortBindings":{ "8080/tcp": [{ "HostIp": "0.0.0.0", "HostPort": "18080" }] }
+    "PortBindings": {
+      "8080/tcp": [
+        {
+          "HostIp": "0.0.0.0",
+          "HostPort": "18080"
+        }
+      ]
+    }
   }
 }
