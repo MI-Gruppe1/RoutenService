@@ -1,14 +1,5 @@
 package routing;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import retrofit2.Call;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import routing.rest.call.google.classes.AddressConversationAnswer;
-import routing.rest.call.google.GoogleApi;
-import routing.rest.call.google.classes.RoutingAnswer;
 import routing.rest.endpoint.Routing;
 
 import java.io.IOException;
@@ -22,18 +13,9 @@ public class RoutenService {
 
 
     public static void main(String[] args) throws IOException {
-        Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-                .create();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://maps.googleapis.com/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-
-        GoogleApi googleApi = retrofit.create(GoogleApi.class);
-        Routing routing = new Routing(gson, googleApi, geocodeKey, directionsKey);
-
+        Routing routing = new Routing("https://maps.googleapis.com/", "https://maps.googleapis.com/", "https://maps.googleapis.com/", geocodeKey, directionsKey);
         routing.startRouting();
+        
     }
 }
