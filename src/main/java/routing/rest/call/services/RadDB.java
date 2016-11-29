@@ -6,7 +6,6 @@ import retrofit2.http.Query;
 import routing.rest.call.services.classes.Station;
 
 import java.util.ArrayList;
-import java.util.DoubleSummaryStatistics;
 
 /**
  * Created by FBeck on 08.11.2016.
@@ -14,6 +13,6 @@ import java.util.DoubleSummaryStatistics;
 public interface RadDB {
 
     @GET("testS")
-    Call<ArrayList<Station>> getStations(@Query("x") int x, @Query("lat") Double lat, @Query("long") Double lng);
+    Call<ArrayList<Station>> getStations(@Query("x") int x, @Query("lat") Double lat, @Query("lng") Double lng);
 
 }

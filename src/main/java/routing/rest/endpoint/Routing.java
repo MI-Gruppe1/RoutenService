@@ -91,7 +91,7 @@ public class Routing {
         return answer.body();
     }
 
-    private List<Station> askStations(Location location) throws IOException {
+    public List<Station> askStations(Location location) throws IOException {
         Call<ArrayList<Station>> call = radD.getStations(5, location.getLat(), location.getLng());
         Response<ArrayList<Station>> response = call.execute();
         return response.body();
@@ -108,8 +108,8 @@ public class Routing {
         List<Station> endLocList = orderStationsInNewList(stationen, endLocation.getLat(), endLocation.getLng());
         boolean found = false;
         Station currentStation = startLocList.get(0);
-        for (int i = 0; (i <= startLocList.size()) || found; i++) {
-            for (int j = 0; (j <= 2) || found; j++) {
+        for (int i = 0; (i < startLocList.size()) && !found; i++) {
+            for (int j = 0; (j <= 2) && !found; j++) {
                 if (endLocList.get(i).getName().equals(startLocList.get(j).getName())) {
                     if (withAbailability && askAvailabilityForStation(endLocList.get(i))) {
                         found = true;
@@ -142,7 +142,7 @@ public class Routing {
         return new WholeRoute(startToFirst.getRoutes().get(0), firstToSecond.getRoutes().get(0), secondToDestination.getRoutes().get(0));
     }
 
-    private WholeRoute routing(String origin, String destination) throws IOException {
+    public WholeRoute routing(String origin, String destination) throws IOException {
         Location originLocation = askDestination(origin);
         Location destinationLocation = askDestination(destination);
 
