@@ -17,6 +17,8 @@ import routing.rest.call.services.classes.Station;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import static spark.Spark.get;
@@ -68,13 +70,16 @@ public class Routing {
 
     public void startRouting() {
         get("/routing", (req, res) -> {
-            String origin = req.queryParams("origin");
+            /*String origin = req.queryParams("origin");
             String destination = req.queryParams("destination");
 
             origin = origin.replaceAll(" ", "+");
             destination = destination.replaceAll(" ", "+");
-
-            return gson.toJson(routing(origin, destination));
+*/
+            HashMap<String, Station> test = new HashMap<String, Station>();
+            test.put("station1", new Station("station1",4.4,4.5));
+            test.put("station2", new Station("station2",4.4,4.5));
+            return gson.toJson(test);//gson.toJson(routing(origin, destination));
         });
     }
 
@@ -96,6 +101,7 @@ public class Routing {
         Response<ArrayList<Station>> response = call.execute();
         return response.body();
     }
+
 
     public List<Station> orderStationsInNewList(List<Station> stationen, double latWaypoint, double lngWaypoint) {
         List<Station> orderedStations = new ArrayList<>(stationen);
@@ -124,6 +130,17 @@ public class Routing {
         return currentStation;
     }
 
+    public List<StationTupel> orderStationsForShortestPath(Location start, Location destination, List<Station> startStations, List<Station> destinationStations){
+        List<StationTupel> stationTupels = new ArrayList<>();
+        for (Station station1: startStations) {
+            for(Station station2: startStations) {
+                stationTupels.add(new StationTupel(station1, station2));
+            }
+        }
+        stationTupels.sort(new StationTupelComparator(start, destination));
+        return stationTupels;
+    }
+
     private Boolean askAvailabilityForStation(Station station) throws IOException {
         Call<Prediction> call = predictionService.getPrediction(station.getName());
         Response<Prediction> response = call.execute();
@@ -142,12 +159,50 @@ public class Routing {
         return new WholeRoute(startToFirst.getRoutes().get(0), firstToSecond.getRoutes().get(0), secondToDestination.getRoutes().get(0));
     }
 
-    private WholeRoute routing(String origin, String destination) throws IOException {
+    private WholeRoute routing(String origin, String destination) throws IOException, NullPointerException {
         Location originLocation = askDestination(origin);
         Location destinationLocation = askDestination(destination);
 
-        Station originStation = findNearestStation(askStations(originLocation), originLocation, destinationLocation, true);
-        Station destinationStation = findNearestStation(askStations(destinationLocation), destinationLocation, originLocation, false);
+        Station originStation = null;
+        Station destinationStation = null;
+
+        List<StationTupel> stationTupel = orderStationsForShortestPath(originLocation, destinationLocation, askStations(originLocation), askStations(destinationLocation));
+        boolean notfound = true;
+        Iterator<StationTupel> stationTupelIterator = stationTupel.iterator();
+        RoutingAnswer startToFirst = null;
+        StationTupel foundTupel = null;
+        while (notfound && stationTupelIterator.hasNext()) {
+            StationTupel currentTupel = stationTupelIterator.next();
+            //start Station laufzeit
+            startToFirst = askRout(originLocation.toLatLongString(), currentTupel.getStationStart().toLocation().toLatLongString(), WALKING);
+            //Berechnen
+
+            // wenn genug räder vorhande
+            if (true) { //genug räder? min. 3-5 zB
+                notfound = false;
+                originStation = currentTupel.getStationStart();
+                destinationStation = currentTupel.getStationDestination();
+                foundTupel = currentTupel;
+            }
+        }
+
+        if(notfound){
+            foundTupel = stationTupel.get(0);
+            originStation = foundTupel.getStationStart();
+            destinationStation = foundTupel.getStationDestination();
+            startToFirst = askRout(originLocation.toLatLongString(), originStation.toLocation().toLatLongString(), WALKING);
+
+        }
+//Stationtupels durchiterieren
+
+//            int bikes = predList.get(predStationIndex).getBikes();
+//            int trend = predList.get(predStationIndex).getTrend();
+
+
+
+        RoutingAnswer firstToSecond = askRout(foundTupel.getStationStart().toLocation().toLatLongString(), foundTupel.getStationDestination().toLocation().toLatLongString(), BICYCLING);
+        RoutingAnswer secondToDestination = askRout(foundTupel.getStationDestination().toLocation().toLatLongString(), destinationLocation.toLatLongString(), WALKING);
+
 
         return buildRout(originLocation, originStation.toLocation(), destinationStation.toLocation(), destinationLocation);
     }

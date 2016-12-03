@@ -14,6 +14,12 @@ public class Prediction {
     @Expose
     private List<Integer> prediction;
 
+    private String StationName;
+
+    private int bikes;
+
+    private int trend;
+
     public Prediction(List<Integer> prediction) {
         this.prediction = prediction;
     }
@@ -24,5 +30,29 @@ public class Prediction {
 
     public void setPrediction(List<Integer> prediction) {
         this.prediction = prediction;
+    }
+
+    public String getStationName() {
+        return StationName;
+    }
+
+    public void setStationName(String stationName) {
+        StationName = stationName;
+    }
+
+    public int getBikes() {
+        return bikes;
+    }
+
+    public void setBikes(int bikes) {
+        this.bikes = bikes;
+    }
+
+    public int getTrend() {
+        return trend;
+    }
+
+    public void setTrend(int trend) {
+        this.trend = trend;
     }
 }

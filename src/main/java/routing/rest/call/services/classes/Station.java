@@ -18,6 +18,13 @@ public class Station {
     @Expose
     private Double longitude;
 
+
+    public Station(String name, Double latitude, Double longitude) {
+        this.name = name;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
