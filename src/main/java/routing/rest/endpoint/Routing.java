@@ -93,10 +93,10 @@ public class Routing {
         Call<RoutingAnswer> call = google.rout(origin, destination, mode, directionsKey);
         Response<RoutingAnswer> answer = call.execute();
 
-        return null;
+        return answer.body();
     }
 
-    private List<Station> askStations(Location location) throws IOException {
+    public List<Station> askStations(Location location) throws IOException {
         Call<ArrayList<Station>> call = radD.getStations(5, location.getLat(), location.getLng());
         Response<ArrayList<Station>> response = call.execute();
         return response.body();
@@ -114,8 +114,8 @@ public class Routing {
         List<Station> endLocList = orderStationsInNewList(stationen, endLocation.getLat(), endLocation.getLng());
         boolean found = false;
         Station currentStation = startLocList.get(0);
-        for (int i = 0; (i <= startLocList.size()) || found; i++) {
-            for (int j = 0; (j <= 2) || found; j++) {
+        for (int i = 0; (i < startLocList.size()) && !found; i++) {
+            for (int j = 0; (j <= 2) && !found; j++) {
                 if (endLocList.get(i).getName().equals(startLocList.get(j).getName())) {
                     if (withAbailability && askAvailabilityForStation(endLocList.get(i))) {
                         found = true;
@@ -130,6 +130,7 @@ public class Routing {
         return currentStation;
     }
 
+<<<<<<< HEAD
     public List<StationTupel> orderStationsForShortestPath(Location start, Location destination, List<Station> startStations, List<Station> destinationStations){
         List<StationTupel> stationTupels = new ArrayList<>();
         for (Station station1: startStations) {
@@ -142,6 +143,9 @@ public class Routing {
     }
 
     private Boolean askAvailabilityForStation(Station station) throws IOException {
+=======
+    public Boolean askAvailabilityForStation(Station station) throws IOException {
+>>>>>>> c118aec2c2e52696d0d74fff376aff5a21f6c49f
         Call<Prediction> call = predictionService.getPrediction(station.getName());
         Response<Prediction> response = call.execute();
         if (response.body().getPrediction().get(0) >= 5) {
@@ -159,7 +163,11 @@ public class Routing {
         return new WholeRoute(startToFirst.getRoutes().get(0), firstToSecond.getRoutes().get(0), secondToDestination.getRoutes().get(0));
     }
 
+<<<<<<< HEAD
     private WholeRoute routing(String origin, String destination) throws IOException, NullPointerException {
+=======
+    public WholeRoute routing(String origin, String destination) throws IOException {
+>>>>>>> c118aec2c2e52696d0d74fff376aff5a21f6c49f
         Location originLocation = askDestination(origin);
         Location destinationLocation = askDestination(destination);
 
