@@ -12,13 +12,16 @@ import routing.rest.call.google.classes.Location;
 import routing.rest.call.services.PredictionService;
 import routing.rest.call.services.classes.Prediction;
 import routing.rest.call.services.classes.Station;
+import routing.rest.call.services.classes.StationPrediction;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static spark.Spark.get;
@@ -81,22 +84,49 @@ public class RoutingTest {
 
         PredictionService predictionService = retrofit.create(PredictionService.class);
 
-        List<Integer> list = new ArrayList();
-        list.add(1);
-        list.add(2);
-        list.add(3);
-        list.add(4);
+        StationPrediction stationPrediction1 = new StationPrediction();
+        stationPrediction1.setStationName("station1");
+        stationPrediction1.setBikes(10);
+        stationPrediction1.setTrend(-2);
+        StationPrediction stationPrediction2 = new StationPrediction();
+        stationPrediction2.setStationName("station2");
+        stationPrediction2.setBikes(10);
+        stationPrediction2.setTrend(-2);
+        StationPrediction stationPrediction3 = new StationPrediction();
+        stationPrediction3.setStationName("station3");
+        stationPrediction3.setBikes(10);
+        stationPrediction3.setTrend(-2);
+        StationPrediction stationPrediction4 = new StationPrediction();
+        stationPrediction4.setStationName("station4");
+        stationPrediction4.setBikes(10);
+        stationPrediction4.setTrend(-2);
+        StationPrediction stationPrediction5 = new StationPrediction();
+        stationPrediction5.setStationName("station5");
+        stationPrediction5.setBikes(10);
+        stationPrediction5.setTrend(-2);
+
+        Map<String, StationPrediction> stationPredictionMap = new HashMap<>();
+        stationPredictionMap.put("station1", stationPrediction1);
+        stationPredictionMap.put("station2", stationPrediction2);
+        stationPredictionMap.put("station3", stationPrediction3);
+        stationPredictionMap.put("station4", stationPrediction4);
+        stationPredictionMap.put("station5", stationPrediction5);
+
+        Prediction prediction = new Prediction();
+        prediction.setPrediction(stationPredictionMap);
 
         port(9999);
         get("/testP", (req, res) -> {
-            return gson.toJson(new Prediction(list));
+            return gson.toJson(prediction);
         });
 
         Thread.sleep(300);
 
-        Call<Prediction> call = predictionService.getPrediction("hallo");
+        Call<Prediction> call = predictionService.getPrediction(new ArrayList<>());
         Response<Prediction> answer = call.execute();
-        assertEquals(list, answer.body().getPrediction());
+        for (Map.Entry<String, StationPrediction> entry: answer.body().getPrediction().entrySet()) {
+            assertEquals(entry.getValue().getStationName(), prediction.getPrediction().get(entry.getKey()).getStationName());
+        }
     }
 
     @Test
@@ -135,13 +165,39 @@ public class RoutingTest {
 
         port(9999);
         get("/testP", (req, res) -> {
-            String name = req.queryParams("name");
-            List<Integer> list = new ArrayList();
-            list.add(8);
-            list.add(8);
-            list.add(8);
-            list.add(8);
-            return gson.toJson(new Prediction(list));
+            String[] names = req.queryParamsValues("names");
+            StationPrediction stationPrediction1 = new StationPrediction();
+            stationPrediction1.setStationName(names[0]);
+            stationPrediction1.setBikes(10);
+            stationPrediction1.setTrend(-2);
+            StationPrediction stationPrediction2 = new StationPrediction();
+            stationPrediction2.setStationName(names[1]);
+            stationPrediction2.setBikes(10);
+            stationPrediction2.setTrend(-2);
+            StationPrediction stationPrediction3 = new StationPrediction();
+            stationPrediction3.setStationName(names[2]);
+            stationPrediction3.setBikes(10);
+            stationPrediction3.setTrend(-2);
+            StationPrediction stationPrediction4 = new StationPrediction();
+            stationPrediction4.setStationName(names[3]);
+            stationPrediction4.setBikes(10);
+            stationPrediction4.setTrend(-2);
+            StationPrediction stationPrediction5 = new StationPrediction();
+            stationPrediction5.setStationName(names[4]);
+            stationPrediction5.setBikes(10);
+            stationPrediction5.setTrend(-2);
+
+            Map<String, StationPrediction> stationPredictionMap = new HashMap<>();
+            stationPredictionMap.put(names[0], stationPrediction1);
+            stationPredictionMap.put(names[1], stationPrediction2);
+            stationPredictionMap.put(names[2], stationPrediction3);
+            stationPredictionMap.put(names[3], stationPrediction4);
+            stationPredictionMap.put(names[4], stationPrediction5);
+
+            Prediction prediction = new Prediction();
+            prediction.setPrediction(stationPredictionMap);
+
+            return gson.toJson(prediction);
         });
 
         get("/testS", (req, res) -> {

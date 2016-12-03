@@ -13,21 +13,25 @@ public class StationTupelComparator implements Comparator<StationTupel> {
 
     private Location start;
     private Location destination;
+    private int walkingWeight;
+    private int bikingWeight;
 
-    public StationTupelComparator(Location start, Location destination) {
+    public StationTupelComparator(Location start, Location destination, int walkingWeight, int bikingWeight) {
         this.start = start;
         this.destination = destination;
+        this.walkingWeight = walkingWeight;
+        this.bikingWeight = bikingWeight;
     }
 
     @Override
     public int compare(StationTupel stationTupel1, StationTupel stationTupel2) {
-        double distance1 = haversine(start.getLat(), start.getLng(), stationTupel1.getStationStart().getLatitude(),stationTupel1.getStationStart().getLongitude());
-        distance1 += haversine(stationTupel1.getStationStart().getLatitude(),stationTupel1.getStationStart().getLongitude(),stationTupel1.getStationDestination().getLatitude(),stationTupel1.getStationDestination().getLongitude());
-        distance1 += haversine(stationTupel1.getStationDestination().getLatitude(),stationTupel1.getStationDestination().getLongitude(),destination.getLat(), destination.getLng());
+        double distance1 = walkingWeight * haversine(start.getLat(), start.getLng(), stationTupel1.getStationStart().getLatitude(),stationTupel1.getStationStart().getLongitude());
+        distance1 += bikingWeight * haversine(stationTupel1.getStationStart().getLatitude(),stationTupel1.getStationStart().getLongitude(),stationTupel1.getStationDestination().getLatitude(),stationTupel1.getStationDestination().getLongitude());
+        distance1 += walkingWeight * haversine(stationTupel1.getStationDestination().getLatitude(),stationTupel1.getStationDestination().getLongitude(),destination.getLat(), destination.getLng());
 
-        double distance2 = haversine(start.getLat(), start.getLng(), stationTupel2.getStationStart().getLatitude(),stationTupel2.getStationStart().getLongitude());
-        distance2 += haversine(stationTupel2.getStationStart().getLatitude(),stationTupel2.getStationStart().getLongitude(),stationTupel2.getStationDestination().getLatitude(),stationTupel2.getStationDestination().getLongitude());
-        distance2 += haversine(stationTupel2.getStationDestination().getLatitude(),stationTupel2.getStationDestination().getLongitude(),destination.getLat(), destination.getLng());
+        double distance2 = walkingWeight * haversine(start.getLat(), start.getLng(), stationTupel2.getStationStart().getLatitude(),stationTupel2.getStationStart().getLongitude());
+        distance2 += bikingWeight * haversine(stationTupel2.getStationStart().getLatitude(),stationTupel2.getStationStart().getLongitude(),stationTupel2.getStationDestination().getLatitude(),stationTupel2.getStationDestination().getLongitude());
+        distance2 += walkingWeight * haversine(stationTupel2.getStationDestination().getLatitude(),stationTupel2.getStationDestination().getLongitude(),destination.getLat(), destination.getLng());
         //return a.age < b.age ? -1 : a.age == b.age ? 0 : 1;
         return distance1 < distance2 ? -1 : distance1 == distance2 ? 0 : 1;
     }

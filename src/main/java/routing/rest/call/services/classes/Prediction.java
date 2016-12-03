@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by FBeck on 15.11.2016.
@@ -12,47 +13,15 @@ public class Prediction {
 
     @SerializedName("prediction")
     @Expose
-    private List<Integer> prediction;
+    private Map<String, StationPrediction> prediction;
 
-    private String StationName;
+    public Prediction(){}
 
-    private int bikes;
-
-    private int trend;
-
-    public Prediction(List<Integer> prediction) {
-        this.prediction = prediction;
-    }
-
-    public List<Integer> getPrediction() {
+    public Map<String, StationPrediction> getPrediction() {
         return prediction;
     }
 
-    public void setPrediction(List<Integer> prediction) {
+    public void setPrediction(Map<String, StationPrediction> prediction) {
         this.prediction = prediction;
-    }
-
-    public String getStationName() {
-        return StationName;
-    }
-
-    public void setStationName(String stationName) {
-        StationName = stationName;
-    }
-
-    public int getBikes() {
-        return bikes;
-    }
-
-    public void setBikes(int bikes) {
-        this.bikes = bikes;
-    }
-
-    public int getTrend() {
-        return trend;
-    }
-
-    public void setTrend(int trend) {
-        this.trend = trend;
     }
 }

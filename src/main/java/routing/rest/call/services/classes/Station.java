@@ -18,6 +18,7 @@ public class Station {
     @Expose
     private Double longitude;
 
+    public Station(){}
 
     public Station(String name, Double latitude, Double longitude) {
         this.name = name;
