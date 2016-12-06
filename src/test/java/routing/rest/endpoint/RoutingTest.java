@@ -9,6 +9,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import routing.rest.call.google.classes.Location;
+import routing.rest.call.google.classes.RoutingAnswer;
 import routing.rest.call.services.PredictionService;
 import routing.rest.call.services.classes.Prediction;
 import routing.rest.call.services.classes.Station;
@@ -27,9 +28,6 @@ import static org.junit.Assert.assertEquals;
 import static spark.Spark.get;
 import static spark.Spark.port;
 
-/**
- * Created by FBeck on 09.11.2016.
- */
 public class RoutingTest {
     @Test
     public void orderStationsTest() throws Exception {
@@ -52,15 +50,19 @@ public class RoutingTest {
         station4.setLatitude(48.91);
         station4.setLongitude(48.5);
 
-        List stationList = new ArrayList();
+        List<Station> stationList = new ArrayList<>();
         stationList.add(station2);
         stationList.add(station3);
         stationList.add(station1);
         stationList.add(station4);
 
-        List orderedStations = routing.orderStationsInNewList(stationList, 49.0, 49.0);
+        Location location = new Location();
+        location.setLat(49.0);
+        location.setLng(49.0);
 
-        List rightStationsList = new ArrayList();
+        List<Station> orderedStations = routing.orderStationsForLocation(stationList, location);
+
+        List<Station> rightStationsList = new ArrayList<>();
         rightStationsList.add(station4);
         rightStationsList.add(station3);
         rightStationsList.add(station1);
@@ -71,8 +73,6 @@ public class RoutingTest {
 
     @Test
     public void predictionServiceTest() throws Exception {
-        Routing routing = new Routing("https://localhost:9999/", "https://maps.googleapis.com/", "https://localhost:9999/", null, null);
-
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .create();
@@ -116,9 +116,7 @@ public class RoutingTest {
         prediction.setPrediction(stationPredictionMap);
 
         port(9999);
-        get("/testP", (req, res) -> {
-            return gson.toJson(prediction);
-        });
+        get("/testP", (req, res) -> gson.toJson(prediction));
 
         Thread.sleep(300);
 
@@ -201,11 +199,13 @@ public class RoutingTest {
         });
 
         get("/testS", (req, res) -> {
-            String x = req.queryParams("x");
             double lat = Double.valueOf(req.queryParams("lat"));
             double lng = Double.valueOf(req.queryParams("lng"));
+            Location location = new Location();
+            location.setLat(lat);
+            location.setLng(lng);
 
-            List<Station> foundStations = routing.orderStationsInNewList(stations, lat, lng);
+            List<Station> foundStations = routing.orderStationsForLocation(stations, location);
             foundStations = foundStations.subList(0,5);
             return gson.toJson(foundStations);
         });
@@ -216,7 +216,7 @@ public class RoutingTest {
         Location location2 = routing.askDestination("Vorsetzen+50");
         List<Station> ss2 = routing.askStations(location2);
 
-        WholeRoute wholeRoute = routing.routing("Berliner+Tor+5","Vorsetzen+50");
+        List<RoutingAnswer> routeAnswer = routing.routing("Berliner+Tor+5","Vorsetzen+50");
 
         System.out.println("h");
     }

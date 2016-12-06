@@ -26,7 +26,6 @@ Prüfen auf Fahrradbestand(prediction service anfragen)
 Auswahl der Stationen (start/ziel)
 
 4:
-
 Directions KEY = AIzaSyA8zzJXkWUkLcjyNPF8VQ6QFNlrvJQjhVE
 
 Google Anfrage für Route

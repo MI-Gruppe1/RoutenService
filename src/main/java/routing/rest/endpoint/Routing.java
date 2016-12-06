@@ -18,7 +18,6 @@ import routing.rest.call.services.classes.StationPrediction;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -110,44 +109,55 @@ public class Routing {
         return answer.body();
     }
 
-    public List<Station> orderStationsInNewList(List<Station> stationen, double latWaypoint, double lngWaypoint) {
+    public List<Station> orderStationsForLocation(List<Station> stationen, Location location) {
         List<Station> orderedStations = new ArrayList<>(stationen);
-        orderedStations.sort(new StationComparator(latWaypoint, lngWaypoint));
+        orderedStations.sort(new StationComparator(location));
         return orderedStations;
     }
 
-    public List<StationTupel> orderStationsForShortestPath(Location start, Location destination, List<Station> startStations, List<Station> destinationStations){
-        List<StationTupel> stationTupels = new ArrayList<>();
+    public List<Way> orderStationsForShortestPath(Location start, Location destination, List<Station> startStations, List<Station> destinationStations){
+        List<Way> ways = new ArrayList<>();
         for (Station station1: startStations) {
             for(Station station2: destinationStations) {
-                stationTupels.add(new StationTupel(station1, station2));
+                ways.add(new Way(start, destination, station1, station2));
             }
         }
-        stationTupels.sort(new StationTupelComparator(start, destination, 2, 1));
-        return stationTupels;
+        ways.sort(new WayComparator(2, 1));
+        return ways;
     }
 
     public int calculateBikesInStationForTime(StationPrediction stationPrediction, double seconds){
         return (int) Math.nextDown(stationPrediction.getBikes() + stationPrediction.getTrend() * seconds / 3600.0);
     }
 
-    public WholeRoute routing(String origin, String destination) throws IOException, NullPointerException {
+    public List<RoutingAnswer> routing(String origin, String destination) throws IOException, NullPointerException {
         Location originLocation = askDestination(origin);
         Location destinationLocation = askDestination(destination);
 
         List<Station> stationsOriginLocation = askStations(originLocation);
+        List<Station> stationsOriginLocationOrdered = orderStationsForLocation(stationsOriginLocation, originLocation);
+        double shortestPathToStation = Haversine.haversine(originLocation.getLat(), originLocation.getLng(), stationsOriginLocationOrdered.get(0).getLatitude(), stationsOriginLocationOrdered.get(0).getLongitude());
+        double stationToStation = Haversine.haversine(originLocation.getLat(), originLocation.getLng(), destinationLocation.getLat(), destinationLocation.getLng());
+
+        if(stationToStation < shortestPathToStation){
+            List<RoutingAnswer> routingAnswers = new ArrayList<>();
+            RoutingAnswer rout = askRout(origin, destination, WALKING);
+            routingAnswers.add(rout);
+            return routingAnswers;
+        }
+
         List<Station> stationsDestinationLocation = askStations(destinationLocation);
         List<Station> tested = new ArrayList<>();
 
         Prediction prediction = askPredictionStations(stationsOriginLocation);
 
-        List<StationTupel> stationTupel = orderStationsForShortestPath(originLocation, destinationLocation, stationsOriginLocation, stationsDestinationLocation);
+        List<Way> way = orderStationsForShortestPath(originLocation, destinationLocation, stationsOriginLocation, stationsDestinationLocation);
         boolean notfound = true;
-        Iterator<StationTupel> stationTupelIterator = stationTupel.iterator();
+        Iterator<Way> stationTupelIterator = way.iterator();
         RoutingAnswer startToFirst = null;
-        StationTupel foundTupel = null;
+        Way foundTupel = null;
         while (notfound && stationTupelIterator.hasNext()) {
-            StationTupel currentTupel = stationTupelIterator.next();
+            Way currentTupel = stationTupelIterator.next();
             if(!tested.contains(currentTupel.getStationStart())) {
                 tested.add(currentTupel.getStationStart());
                 //start Station laufzeit
@@ -163,13 +173,18 @@ public class Routing {
         }
 
         if(notfound){
-            foundTupel = stationTupel.get(0);
+            foundTupel = way.get(0);
             startToFirst = askRout(originLocation.toLatLongString(), foundTupel.getStationStart().toLocation().toLatLongString(), WALKING);
         }
 
         RoutingAnswer firstToSecond = askRout(foundTupel.getStationStart().toLocation().toLatLongString(), foundTupel.getStationDestination().toLocation().toLatLongString(), BICYCLING);
         RoutingAnswer secondToDestination = askRout(foundTupel.getStationDestination().toLocation().toLatLongString(), destinationLocation.toLatLongString(), WALKING);
 
-        return new WholeRoute(startToFirst.getRoutes().get(0), firstToSecond.getRoutes().get(0), secondToDestination.getRoutes().get(0));
+        List<RoutingAnswer> routingAnswers = new ArrayList<>();
+        routingAnswers.add(startToFirst);
+        routingAnswers.add(firstToSecond);
+        routingAnswers.add(secondToDestination);
+
+        return routingAnswers;
     }
 }
