@@ -8,9 +8,16 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
+import routing.RoutenService;
+import routing.rest.call.google.GoogleApi;
+import routing.rest.call.google.classes.AddressConversationAnswer;
 import routing.rest.call.google.classes.Location;
 import routing.rest.call.google.classes.RoutingAnswer;
-import routing.rest.call.services.PredictionService;
+import routing.rest.call.services.BestandsService;
+import routing.rest.call.services.classes.BestandStation;
 import routing.rest.call.services.classes.Prediction;
 import routing.rest.call.services.classes.Station;
 import routing.rest.call.services.classes.StationPrediction;
@@ -27,6 +34,12 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static spark.Spark.get;
 import static spark.Spark.port;
+
+interface RoutingAPI{
+    @GET("routing")
+    Call<List<RoutingAnswer>> route(@Query("origin") String origin, @Query("destination") String destination);
+
+}
 
 public class RoutingTest {
     @Test
@@ -82,7 +95,7 @@ public class RoutingTest {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        PredictionService predictionService = retrofit.create(PredictionService.class);
+        BestandsService bestandsService = retrofit.create(BestandsService.class);
 
         StationPrediction stationPrediction1 = new StationPrediction();
         stationPrediction1.setStationName("station1");
@@ -105,30 +118,26 @@ public class RoutingTest {
         stationPrediction5.setBikes(10);
         stationPrediction5.setTrend(-2);
 
-        Map<String, StationPrediction> stationPredictionMap = new HashMap<>();
-        stationPredictionMap.put("station1", stationPrediction1);
-        stationPredictionMap.put("station2", stationPrediction2);
-        stationPredictionMap.put("station3", stationPrediction3);
-        stationPredictionMap.put("station4", stationPrediction4);
-        stationPredictionMap.put("station5", stationPrediction5);
-
-        Prediction prediction = new Prediction();
-        prediction.setPrediction(stationPredictionMap);
+        List<StationPrediction> stationPredictions = new ArrayList<>();
+        stationPredictions.add(stationPrediction1);
+        stationPredictions.add(stationPrediction2);
+        stationPredictions.add(stationPrediction3);
+        stationPredictions.add(stationPrediction4);
+        stationPredictions.add(stationPrediction5);
 
         port(9999);
-        get("/testP", (req, res) -> gson.toJson(prediction));
+        get("/bestandUndVorhersage", (req, res) -> gson.toJson(stationPredictions));
 
         Thread.sleep(300);
 
-        Call<Prediction> call = predictionService.getPrediction(new ArrayList<>());
-        Response<Prediction> answer = call.execute();
-        for (Map.Entry<String, StationPrediction> entry: answer.body().getPrediction().entrySet()) {
-            assertEquals(entry.getValue().getStationName(), prediction.getPrediction().get(entry.getKey()).getStationName());
-        }
+        Call<List<StationPrediction>> call = bestandsService.getPrediction(new ArrayList<>());
+        Response<List<StationPrediction>> answer = call.execute();
+        assertEquals(answer.body(), stationPredictions);
     }
 
     @Test
     public void routingTest() throws Exception {
+        port(9999);
 
         String str = "";
         try
@@ -153,54 +162,62 @@ public class RoutingTest {
                 "http://localhost:9999/",
                 "AIzaSyDMvwHv9F7evXsKaDGdIhKNUyjsyviV4aU",
                 "AIzaSyAWbOGw9GOWPE3PgytbNiNh011aw8_L2bQ");
+        routing.startRouting();
 
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .create();
 
-        Type listType = new TypeToken<ArrayList<Station>>(){}.getType();
-        List<Station> stations = gson.fromJson(str, listType);
+        Type listTypeStations = new TypeToken<ArrayList<Station>>(){}.getType();
+        List<Station> stations = gson.fromJson(str, listTypeStations);
 
-        port(9999);
-        get("/testP", (req, res) -> {
+        Type listTypeBestandStations = new TypeToken<ArrayList<BestandStation>>(){}.getType();
+
+        Retrofit googleRetrofit = new Retrofit.Builder()
+                .baseUrl("http://localhost:9999/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+        RoutingAPI routenService = googleRetrofit.create(RoutingAPI.class);
+
+        get("/bestandUndVorhersage", (req, res) -> {
+            List<BestandStation> bestandStations = gson.fromJson(req.body(), listTypeBestandStations);
             String[] names = req.queryParamsValues("names");
             StationPrediction stationPrediction1 = new StationPrediction();
-            stationPrediction1.setStationName(names[0]);
+            stationPrediction1.setStationName(bestandStations.get(0).getName());
             stationPrediction1.setBikes(10);
             stationPrediction1.setTrend(-2);
             StationPrediction stationPrediction2 = new StationPrediction();
-            stationPrediction2.setStationName(names[1]);
+            stationPrediction2.setStationName(bestandStations.get(1).getName());
             stationPrediction2.setBikes(10);
             stationPrediction2.setTrend(-2);
             StationPrediction stationPrediction3 = new StationPrediction();
-            stationPrediction3.setStationName(names[2]);
+            stationPrediction3.setStationName(bestandStations.get(2).getName());
             stationPrediction3.setBikes(10);
             stationPrediction3.setTrend(-2);
             StationPrediction stationPrediction4 = new StationPrediction();
-            stationPrediction4.setStationName(names[3]);
+            stationPrediction4.setStationName(bestandStations.get(3).getName());
             stationPrediction4.setBikes(10);
             stationPrediction4.setTrend(-2);
             StationPrediction stationPrediction5 = new StationPrediction();
-            stationPrediction5.setStationName(names[4]);
+            stationPrediction5.setStationName(bestandStations.get(4).getName());
             stationPrediction5.setBikes(10);
             stationPrediction5.setTrend(-2);
 
-            Map<String, StationPrediction> stationPredictionMap = new HashMap<>();
-            stationPredictionMap.put(names[0], stationPrediction1);
-            stationPredictionMap.put(names[1], stationPrediction2);
-            stationPredictionMap.put(names[2], stationPrediction3);
-            stationPredictionMap.put(names[3], stationPrediction4);
-            stationPredictionMap.put(names[4], stationPrediction5);
+            List<StationPrediction> stationPredictions = new ArrayList<>();
+            stationPredictions.add(stationPrediction1);
+            stationPredictions.add(stationPrediction2);
+            stationPredictions.add(stationPrediction3);
+            stationPredictions.add(stationPrediction4);
+            stationPredictions.add(stationPrediction5);
 
-            Prediction prediction = new Prediction();
-            prediction.setPrediction(stationPredictionMap);
-
-            return gson.toJson(prediction);
+            return gson.toJson(stationPredictions);
         });
 
-        get("/testS", (req, res) -> {
-            double lat = Double.valueOf(req.queryParams("lat"));
-            double lng = Double.valueOf(req.queryParams("lng"));
+        get("/nextXStationsofLatLong", (req, res) -> {
+            int number_of_stations = Integer.valueOf(req.queryParams("number_of_stations"));
+            double lat = Double.valueOf(req.queryParams("latitude"));
+            double lng = Double.valueOf(req.queryParams("longitude"));
             Location location = new Location();
             location.setLat(lat);
             location.setLng(lng);
@@ -210,14 +227,12 @@ public class RoutingTest {
             return gson.toJson(foundStations);
         });
 
-        Location location1 = routing.askDestination("Berliner+Tor+5");
-        List<Station> ss1 = routing.askStations(location1);
+        Call<List<RoutingAnswer>> call = routenService.route("Berliner+Tor+5","Vorsetzen+50");
+        Response<List<RoutingAnswer>> answer = call.execute();
 
-        Location location2 = routing.askDestination("Vorsetzen+50");
-        List<Station> ss2 = routing.askStations(location2);
+        //List<RoutingAnswer> routeAnswer = routing.routing("Berliner+Tor+5","Vorsetzen+50");
+        //String answer = gson.toJson(routeAnswer);
 
-        List<RoutingAnswer> routeAnswer = routing.routing("Berliner+Tor+5","Vorsetzen+50");
-
-        System.out.println("h");
+        assertEquals(true,true);
     }
 }

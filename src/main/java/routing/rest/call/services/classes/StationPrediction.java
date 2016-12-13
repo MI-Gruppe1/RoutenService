@@ -9,24 +9,24 @@ import com.google.gson.annotations.SerializedName;
 public class StationPrediction {
     @SerializedName("name")
     @Expose
-    private String StationName;
+    private String stationName;
 
     @SerializedName("bikes")
     @Expose
     private int bikes;
 
-    @SerializedName("trend")
+    @SerializedName("vorhersage")
     @Expose
     private int trend;
 
     public StationPrediction() {}
 
     public String getStationName() {
-        return StationName;
+        return stationName;
     }
 
     public void setStationName(String stationName) {
-        StationName = stationName;
+        this.stationName = stationName;
     }
 
     public int getBikes() {
@@ -43,5 +43,26 @@ public class StationPrediction {
 
     public void setTrend(int trend) {
         this.trend = trend;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StationPrediction)) return false;
+
+        StationPrediction that = (StationPrediction) o;
+
+        if (getBikes() != that.getBikes()) return false;
+        if (getTrend() != that.getTrend()) return false;
+        return getStationName().equals(that.getStationName());
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getStationName().hashCode();
+        result = 31 * result + getBikes();
+        result = 31 * result + getTrend();
+        return result;
     }
 }

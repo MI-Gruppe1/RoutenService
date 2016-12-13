@@ -2,6 +2,9 @@ package routing.rest.endpoint;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.mashape.unirest.http.Unirest;
+import io.restassured.RestAssured;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -10,18 +13,24 @@ import routing.rest.call.google.GoogleApi;
 import routing.rest.call.google.classes.AddressConversationAnswer;
 import routing.rest.call.google.classes.Location;
 import routing.rest.call.google.classes.RoutingAnswer;
-import routing.rest.call.services.PredictionService;
+import routing.rest.call.services.BestandsService;
 import routing.rest.call.services.RadDB;
+import routing.rest.call.services.classes.BestandStation;
 import routing.rest.call.services.classes.Prediction;
 import routing.rest.call.services.classes.Station;
 import routing.rest.call.services.classes.StationPrediction;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import static spark.Spark.get;
+import static io.restassured.RestAssured.*;
+import static io.restassured.matcher.RestAssuredMatchers.*;
+import static org.hamcrest.Matchers.*;
+
 
 /**
  * Created by FBeck on 08.11.2016.
@@ -31,7 +40,8 @@ public class Routing {
     private Gson gson;
     private GoogleApi google;
     private RadDB radD;
-    private PredictionService predictionService;
+    private BestandsService bestandsService;
+    private String predictionService;
 
     private String geocodeKey;
     private String directionsKey;
@@ -42,6 +52,7 @@ public class Routing {
     public Routing(String google, String radDB, String predictionService, String geocodeKey, String directionsKey) {
         this.geocodeKey = geocodeKey;
         this.directionsKey = directionsKey;
+        this.predictionService = predictionService;
 
         this.gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -65,7 +76,7 @@ public class Routing {
                 .baseUrl(predictionService)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
-        this.predictionService = predictionServiceRetrofit.create(PredictionService.class);
+        this.bestandsService = predictionServiceRetrofit.create(BestandsService.class);
     }
 
     public void startRouting() {
@@ -87,13 +98,16 @@ public class Routing {
     }
 
     private Prediction askPredictionStations( List<Station> stations) throws IOException {
-        List<String> stationNames = new ArrayList<>();
+
+        List<BestandStation> bestandStations = new ArrayList<>();
         for (Station station: stations) {
-            stationNames.add(station.getName());
+            bestandStations.add(new BestandStation(station.getName()));
         }
-        Call<Prediction> call = predictionService.getPrediction(stationNames);
-        Response<Prediction> response = call.execute();
-        return response.body();
+        io.restassured.response.Response response = RestAssured.given().contentType("application/json").body(gson.toJson(bestandStations)).get(predictionService + "bestandUndVorhersage");
+
+        Type listTypeStations = new TypeToken<ArrayList<StationPrediction>>(){}.getType();
+
+        return new Prediction(gson.fromJson(response.asString(), listTypeStations));
     }
 
     public Location askDestination(String wayPoint) throws IOException {

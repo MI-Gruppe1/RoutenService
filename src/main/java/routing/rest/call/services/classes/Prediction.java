@@ -3,6 +3,7 @@ package routing.rest.call.services.classes;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,13 @@ public class Prediction {
     private Map<String, StationPrediction> prediction;
 
     public Prediction(){}
+
+    public Prediction(List<StationPrediction> predictions){
+        this.prediction = new HashMap<>();
+        for (StationPrediction prediciton: predictions) {
+            this.prediction.put(prediciton.getStationName(), prediciton);
+        }
+    }
 
     public Map<String, StationPrediction> getPrediction() {
         return prediction;

@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public interface RadDB {
 
-    @GET("testS")
-    Call<ArrayList<Station>> getStations(@Query("x") int x, @Query("lat") Double lat, @Query("lng") Double lng);
+    @GET("nextXStationsofLatLong")
+    Call<ArrayList<Station>> getStations(@Query("number_of_stations") int x, @Query("latitude") Double lat, @Query("longitude") Double lng);
 
 }
