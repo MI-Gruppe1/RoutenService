@@ -14,7 +14,7 @@ public class RoutenService {
 
     public static void main(String[] args) throws IOException {
 
-        Routing routing = new Routing("https://maps.googleapis.com/", "https://maps.googleapis.com/", "https://maps.googleapis.com/", geocodeKey, directionsKey);
+        Routing routing = new Routing("https://maps.googleapis.com/", "https://stadtraddbservice:6000/", "https://condescending_engelbart:5000/", geocodeKey, directionsKey);
         routing.startRouting();
         
     }
