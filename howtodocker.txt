@@ -3,7 +3,10 @@ docker build -t routen .
 docker run -p 4567:7000 - -name routenservice routen
 docker rm routenservice
 
+
+
 LOCAL ZU ABG769
+docker build -t routen .
 docker save -o ./routenservice.tar routen
 
 scp routenservice.tar abg769@ssh.informatik.haw-hamburg.de:/home/students/abg769
@@ -13,10 +16,6 @@ ABG769 ZU SERVER
 ssh abg769@ssh.informatik.haw-hamburg.de
 
 scp /home/students/abg769/routenservice.tar mip@mipgrp1.ful.informatik.haw-hamburg.de:
-
-docker build -t routen .
-docker save -o ./routenservice.tar routen
-
 
 DOCKER AUF SERVER
 ssh mip@mipgrp1.ful.informatik.haw-hamburg.de
