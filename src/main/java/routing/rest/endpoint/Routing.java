@@ -82,6 +82,7 @@ public class Routing {
 
     public void startRouting() {
         Spark.port(7000);
+        System.out.println("XXXXX");
         get("/routing", (req, res) -> {
             System.out.println("Neue Anfrage!");
             String origin = req.queryParams("origin");
