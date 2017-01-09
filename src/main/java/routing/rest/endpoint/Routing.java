@@ -83,6 +83,7 @@ public class Routing {
     public void startRouting() {
         Spark.port(7000);
         get("/routing", (req, res) -> {
+            System.out.println("Neue Anfrage!");
             String origin = req.queryParams("origin");
             String destination = req.queryParams("destination");
 
@@ -154,6 +155,7 @@ public class Routing {
     }
 
     public List<RoutingAnswer> routing(String origin, String destination) throws IOException, NullPointerException {
+        System.out.println("Routing starten!");
         Location originLocation = askDestination(origin);
         Location destinationLocation = askDestination(destination);
 
@@ -212,6 +214,7 @@ public class Routing {
 
             return routingAnswers;
         } catch (IOException e) {
+            System.out.println("Routing fallback!");
             List<RoutingAnswer> routingAnswers = new ArrayList<>();
 
             RoutingAnswer rout = askRout(originLocation.toLatLongString(), destinationLocation.toLatLongString(), BICYCLING);
