@@ -19,6 +19,7 @@ import routing.rest.call.services.classes.BestandStation;
 import routing.rest.call.services.classes.Prediction;
 import routing.rest.call.services.classes.Station;
 import routing.rest.call.services.classes.StationPrediction;
+import spark.Spark;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -80,6 +81,7 @@ public class Routing {
     }
 
     public void startRouting() {
+        Spark.port(7000);
         get("/routing", (req, res) -> {
             String origin = req.queryParams("origin");
             String destination = req.queryParams("destination");
