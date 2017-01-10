@@ -240,6 +240,9 @@ public class Routing {
             return routingAnswers;
         } catch (UnirestException e) {
             System.out.println("Routing fallback!");
+            System.out.println(e.getMessage());
+            System.out.println(e.getStackTrace());
+            System.out.println(e);
             List<RoutingAnswer> routingAnswers = new ArrayList<>();
 
             RoutingAnswer rout = askRout(originLocation.toLatLongString(), destinationLocation.toLatLongString(), BICYCLING);
