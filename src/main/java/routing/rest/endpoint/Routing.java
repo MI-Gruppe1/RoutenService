@@ -109,6 +109,9 @@ public class Routing {
     //            .queryString("longitude", location.getLng())
                 .asJson();
 
+        io.restassured.response.Response response = RestAssured.given().contentType("application/json").get(string);
+
+
         System.out.println("AskStations: " + jsonResponse.getStatus());
         System.out.println("AskStations: " + jsonResponse.getBody().toString() );
 
