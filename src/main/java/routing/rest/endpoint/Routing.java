@@ -107,6 +107,9 @@ public class Routing {
                 .queryString("longitude", location.getLng())
                 .asJson();
 
+        System.out.println("AskStations: " + jsonResponse.getStatus());
+        System.out.println("AskStations: " + jsonResponse.getBody().toString() );
+
         if (jsonResponse.getStatus() != 200){
             throw new UnirestException("" + jsonResponse.getStatus());
         }
