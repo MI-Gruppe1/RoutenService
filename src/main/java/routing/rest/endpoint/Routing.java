@@ -86,7 +86,7 @@ public class Routing {
     }
 
     public void startRouting() {
-        //Spark.port(7000);
+        Spark.port(7000);
         System.out.println("XXXXX");
         get("/routing", (req, res) -> {
             System.out.println("Neue Anfrage!");
@@ -228,6 +228,14 @@ public class Routing {
 
             return routingAnswers;
         } catch (IOException e) {
+            System.out.println("Routing fallback!");
+            List<RoutingAnswer> routingAnswers = new ArrayList<>();
+
+            RoutingAnswer rout = askRout(originLocation.toLatLongString(), destinationLocation.toLatLongString(), BICYCLING);
+
+            routingAnswers.add(rout);
+            return routingAnswers;
+        } catch (UnirestException e) {
             System.out.println("Routing fallback!");
             List<RoutingAnswer> routingAnswers = new ArrayList<>();
 
