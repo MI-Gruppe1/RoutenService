@@ -7,7 +7,6 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import io.restassured.RestAssured;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -31,9 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import static spark.Spark.get;
-import static io.restassured.RestAssured.*;
-import static io.restassured.matcher.RestAssuredMatchers.*;
-import static org.hamcrest.Matchers.*;
 
 
 /**
@@ -86,7 +82,7 @@ public class Routing {
     }
 
     public void startRouting() {
-        Spark.port(7000);
+        //Spark.port(7000);
         System.out.println("XXXXX");
         get("/routing", (req, res) -> {
             System.out.println("Neue Anfrage!");
@@ -108,9 +104,6 @@ public class Routing {
     //            .queryString("latitude", location.getLat())
     //            .queryString("longitude", location.getLng())
                 .asJson();
-
-        io.restassured.response.Response response = RestAssured.given().contentType("application/json").get(string);
-
 
         System.out.println("AskStations: " + jsonResponse.getStatus());
         System.out.println("AskStations: " + jsonResponse.getBody().toString() );
