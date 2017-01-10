@@ -101,10 +101,12 @@ public class Routing {
     }
 
     public List<Station> askStations(Location location) throws UnirestException {
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(radDB + "nextXStationsofLatLong")
-                .queryString("number_of_stations", 5)
-                .queryString("latitude", location.getLat())
-                .queryString("longitude", location.getLng())
+        String string = radDB + "nextXStationsofLatLong?number_of_stations=5&latitude=" + location.getLat() + "&longitude=" + location.getLng();
+        System.out.println(string);
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(string)
+    //            .queryString("number_of_stations", 5)
+    //            .queryString("latitude", location.getLat())
+    //            .queryString("longitude", location.getLng())
                 .asJson();
 
         System.out.println("AskStations: " + jsonResponse.getStatus());
