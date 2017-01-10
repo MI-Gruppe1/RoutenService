@@ -3,7 +3,10 @@ package routing.rest.endpoint;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import io.restassured.RestAssured;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -43,6 +46,7 @@ public class Routing {
     private RadDB radD;
     private BestandsService bestandsService;
     private String predictionService;
+    private String radDB;
 
     private String geocodeKey;
     private String directionsKey;
@@ -54,6 +58,7 @@ public class Routing {
         this.geocodeKey = geocodeKey;
         this.directionsKey = directionsKey;
         this.predictionService = predictionService;
+        this.radDB = radDB;
 
         this.gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -81,7 +86,7 @@ public class Routing {
     }
 
     public void startRouting() {
-        Spark.port(7000);
+        //Spark.port(7000);
         System.out.println("XXXXX");
         get("/routing", (req, res) -> {
             System.out.println("Neue Anfrage!");
@@ -95,13 +100,19 @@ public class Routing {
         });
     }
 
-    public List<Station> askStations(Location location) throws IOException {
-        Call<ArrayList<Station>> call = radD.getStations(5, location.getLat(), location.getLng());
-        Response<ArrayList<Station>> response = call.execute();
-        if (response.code() != 200){
-            throw new IOException();
+    public List<Station> askStations(Location location) throws UnirestException {
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(radDB + "nextXStationsofLatLong")
+                .queryString("number_of_stations", 5)
+                .queryString("latitude", location.getLat())
+                .queryString("longitude", location.getLng())
+                .asJson();
+
+        if (jsonResponse.getStatus() != 200){
+            throw new UnirestException("" + jsonResponse.getStatus());
         }
-        return response.body();
+
+        Type listTypeStations = new TypeToken<ArrayList<Station>>() {}.getType();
+        return gson.fromJson(jsonResponse.getBody().toString(), listTypeStations);
     }
 
     private Prediction askPredictionStations(List<Station> stations) throws IOException {
@@ -155,7 +166,7 @@ public class Routing {
         return (int) Math.nextDown(stationPrediction.getBikes() + stationPrediction.getTrend() * seconds / 3600.0);
     }
 
-    public List<RoutingAnswer> routing(String origin, String destination) throws IOException, NullPointerException {
+    public List<RoutingAnswer> routing(String origin, String destination) throws IOException, UnirestException, NullPointerException {
         System.out.println("Routing starten!");
         Location originLocation = askDestination(origin);
         Location destinationLocation = askDestination(destination);
