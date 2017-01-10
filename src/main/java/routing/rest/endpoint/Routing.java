@@ -129,7 +129,11 @@ public class Routing {
         for (Station station : stations) {
             bestandStations.add(new BestandStation(station.getName()));
         }
-        io.restassured.response.Response response = RestAssured.given().contentType("application/json").body(gson.toJson(bestandStations)).get(predictionService + "bestandUndVorhersage");
+        String string = predictionService + "bestandUndVorhersage";
+        io.restassured.response.Response response = RestAssured.given().contentType("application/json").body(gson.toJson(bestandStations)).get(string);
+
+        System.out.println("Prediction: " + response.statusCode());
+        System.out.println("Prediction: " + response.toString());
 
         Type listTypeStations = new TypeToken<ArrayList<StationPrediction>>() {
         }.getType();
@@ -237,6 +241,10 @@ public class Routing {
             return routingAnswers;
         } catch (IOException e) {
             System.out.println("Routing fallback!");
+            System.out.println(e.getMessage());
+            System.out.println(e.getStackTrace());
+            System.out.println(e);
+
             List<RoutingAnswer> routingAnswers = new ArrayList<>();
 
             RoutingAnswer rout = askRout(originLocation.toLatLongString(), destinationLocation.toLatLongString(), BICYCLING);
