@@ -162,6 +162,7 @@ public class Routing {
 
         try {
             List<Station> stationsOriginLocation = askStations(originLocation);
+            System.out.println("Stationen bekommen!");
 
             List<Station> stationsOriginLocationOrdered = orderStationsForLocation(stationsOriginLocation, originLocation);
             double shortestPathToStation = Haversine.haversine(originLocation.getLat(), originLocation.getLng(), stationsOriginLocationOrdered.get(0).getLatitude(), stationsOriginLocationOrdered.get(0).getLongitude());
@@ -175,6 +176,7 @@ public class Routing {
             }
 
             List<Station> stationsDestinationLocation = askStations(destinationLocation);
+            System.out.println("Stationen bekommen");
             List<Station> tested = new ArrayList<>();
 
             Prediction prediction = askPredictionStations(stationsOriginLocation);
