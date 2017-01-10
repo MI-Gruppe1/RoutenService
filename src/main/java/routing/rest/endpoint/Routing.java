@@ -86,7 +86,7 @@ public class Routing {
     }
 
     public void startRouting() {
-        //Spark.port(7000);
+        Spark.port(7000);
         System.out.println("XXXXX");
         get("/routing", (req, res) -> {
             System.out.println("Neue Anfrage!");
@@ -123,26 +123,27 @@ public class Routing {
         return gson.fromJson(jsonResponse.getBody().toString(), listTypeStations);
     }
 
-    private Prediction askPredictionStations(List<Station> stations) throws IOException {
+    private Prediction askPredictionStations(List<Station> stations) throws UnirestException {
 
         List<BestandStation> bestandStations = new ArrayList<>();
         for (Station station : stations) {
             bestandStations.add(new BestandStation(station.getName()));
         }
-        String string = predictionService + "bestand";
+        String string = predictionService + "bestandUndVorhersage";
         System.out.println(string);
-        io.restassured.response.Response response = RestAssured.given().contentType("application/json").body(gson.toJson(bestandStations)).get(string);
+        HttpResponse<JsonNode> jsonResponse = Unirest.post(string)
+                                                .body(gson.toJson(bestandStations))
+                                                .asJson();
 
-        System.out.println("Prediction: " + response.statusCode());
-        System.out.println("Prediction: " + response.toString());
+        System.out.println("Prediction: " + jsonResponse.getStatus());
+        System.out.println("Prediction: " + jsonResponse.getBody().toString() );
 
-        Type listTypeStations = new TypeToken<ArrayList<StationPrediction>>() {
-        }.getType();
-
-        if(response.hashCode() != 200){
-            throw new IOException();
+        if (jsonResponse.getStatus() != 200){
+            throw new UnirestException("" + jsonResponse.getStatus());
         }
-        return new Prediction(gson.fromJson(response.asString(), listTypeStations));
+
+        Type listTypeStations = new TypeToken<ArrayList<StationPrediction>>() {}.getType();
+        return new Prediction(gson.fromJson(jsonResponse.getBody().toString(), listTypeStations));
     }
 
     public Location askDestination(String wayPoint) throws IOException {

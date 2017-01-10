@@ -3,6 +3,7 @@ package routing.rest.call.services;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 import routing.rest.call.services.classes.BestandStation;
 import routing.rest.call.services.classes.Prediction;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public interface BestandsService {
 
-    @GET("bestandUndVorhersage")
-    Call<List<StationPrediction>> getPrediction(@Query("stations") List<BestandStation> stations);
+    @POST("bestandUndVorhersage")
+    Call<List<StationPrediction>> getPrediction(@Body List<BestandStation> stations);
 
 }
