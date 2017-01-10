@@ -86,7 +86,7 @@ public class Routing {
     }
 
     public void startRouting() {
-        Spark.port(7000);
+        //Spark.port(7000);
         System.out.println("XXXXX");
         get("/routing", (req, res) -> {
             System.out.println("Neue Anfrage!");
@@ -129,7 +129,8 @@ public class Routing {
         for (Station station : stations) {
             bestandStations.add(new BestandStation(station.getName()));
         }
-        String string = predictionService + "bestandUndVorhersage";
+        String string = predictionService + "bestand";
+        System.out.println(string);
         io.restassured.response.Response response = RestAssured.given().contentType("application/json").body(gson.toJson(bestandStations)).get(string);
 
         System.out.println("Prediction: " + response.statusCode());
