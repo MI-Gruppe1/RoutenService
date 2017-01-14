@@ -82,7 +82,7 @@ public class Routing {
     }
 
     public void startRouting() {
-        //Spark.port(7000);
+        Spark.port(7000);
         System.out.println("XXXXX");
         get("/routing", (req, res) -> {
             System.out.println("Neue Anfrage!");
@@ -213,7 +213,7 @@ public class Routing {
                     //Berechnen
                     int bikes = calculateBikesInStationForTime(prediction.getPrediction().get(currentTupel.getStationStart().getName()), startToFirst.getRoutes().get(0).getLegs().get(0).getDuration().getValue());
                     // wenn genug räder vorhande
-                    if (bikes > 3) { //genug räder? min. 3-5 zB
+                    if (bikes > 2) { //genug räder? min. 3-5 zB
                         notfound = false;
                         foundTupel = currentTupel;
                     }

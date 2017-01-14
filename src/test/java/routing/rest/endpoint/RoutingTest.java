@@ -3,6 +3,10 @@ package routing.rest.endpoint;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.sun.deploy.net.URLEncoder;
 import org.junit.Test;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -21,6 +25,7 @@ import routing.rest.call.services.classes.BestandStation;
 import routing.rest.call.services.classes.Prediction;
 import routing.rest.call.services.classes.Station;
 import routing.rest.call.services.classes.StationPrediction;
+import spark.Spark;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,12 +39,6 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static spark.Spark.get;
 import static spark.Spark.port;
-
-interface RoutingAPI{
-    @GET("routing")
-    Call<List<RoutingAnswer>> route(@Query("origin") String origin, @Query("destination") String destination);
-
-}
 
 public class RoutingTest {
     @Test
@@ -137,7 +136,7 @@ public class RoutingTest {
 
     @Test
     public void routingTest() throws Exception {
-        port(9999);
+        port(7000);
 
         String str = "";
         try
@@ -158,8 +157,8 @@ public class RoutingTest {
         }
 
         Routing routing = new Routing("https://maps.googleapis.com/",
-                "http://localhost:9999/",
-                "http://localhost:9999/",
+                "http://localhost:7000/",
+                "http://localhost:7000/",
                 "AIzaSyDMvwHv9F7evXsKaDGdIhKNUyjsyviV4aU",
                 "AIzaSyAWbOGw9GOWPE3PgytbNiNh011aw8_L2bQ");
         routing.startRouting();
@@ -173,32 +172,25 @@ public class RoutingTest {
 
         Type listTypeBestandStations = new TypeToken<ArrayList<BestandStation>>(){}.getType();
 
-        Retrofit googleRetrofit = new Retrofit.Builder()
-                .baseUrl("http://localhost:9999/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-
-        RoutingAPI routenService = googleRetrofit.create(RoutingAPI.class);
-
-        get("/bestandUndVorhersage", (req, res) -> {
+        Spark.post("/bestandUndVorhersage", (req, res) -> {
             List<BestandStation> bestandStations = gson.fromJson(req.body(), listTypeBestandStations);
             String[] names = req.queryParamsValues("names");
             StationPrediction stationPrediction1 = new StationPrediction();
             stationPrediction1.setStationName(bestandStations.get(0).getName());
-            stationPrediction1.setBikes(10);
-            stationPrediction1.setTrend(-2);
+            stationPrediction1.setBikes(3);
+            stationPrediction1.setTrend(0);
             StationPrediction stationPrediction2 = new StationPrediction();
             stationPrediction2.setStationName(bestandStations.get(1).getName());
-            stationPrediction2.setBikes(10);
-            stationPrediction2.setTrend(-2);
+            stationPrediction2.setBikes(3);
+            stationPrediction2.setTrend(-3);
             StationPrediction stationPrediction3 = new StationPrediction();
             stationPrediction3.setStationName(bestandStations.get(2).getName());
-            stationPrediction3.setBikes(10);
-            stationPrediction3.setTrend(-2);
+            stationPrediction3.setBikes(0);
+            stationPrediction3.setTrend(0);
             StationPrediction stationPrediction4 = new StationPrediction();
             stationPrediction4.setStationName(bestandStations.get(3).getName());
-            stationPrediction4.setBikes(10);
-            stationPrediction4.setTrend(-2);
+            stationPrediction4.setBikes(0);
+            stationPrediction4.setTrend(0);
             StationPrediction stationPrediction5 = new StationPrediction();
             stationPrediction5.setStationName(bestandStations.get(4).getName());
             stationPrediction5.setBikes(10);
@@ -227,8 +219,7 @@ public class RoutingTest {
             return gson.toJson(foundStations);
         });
 
-        Call<List<RoutingAnswer>> call = routenService.route("Berliner+Tor+5","Vorsetzen+50");
-        Response<List<RoutingAnswer>> answer = call.execute();
+        HttpResponse<JsonNode> jsonResponse = Unirest.get("http://localhost:7000/routing?origin=Berliner+Tor+5&destination=Vorsetzen+50").asJson();
 
         //List<RoutingAnswer> routeAnswer = routing.routing("Berliner+Tor+5","Vorsetzen+50");
         //String answer = gson.toJson(routeAnswer);
