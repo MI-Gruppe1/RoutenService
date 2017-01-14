@@ -7,7 +7,6 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.body.RequestBodyEntity;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -125,8 +124,8 @@ public class Routing {
         }
         String string = predictionService + "bestandUndVorhersage";
         System.out.println(string);
-        RequestBodyEntity jsonResponse = Unirest.post(string)
-                                                .body(gson.toJson(bestandStations));
+        HttpResponse<JsonNode> jsonResponse = Unirest.post(string)
+                                                .body(gson.toJson(bestandStations)).asJson();
 
         //System.out.println("Prediction: " + jsonResponse.getStatus());
         System.out.println("Prediction: " + jsonResponse.getBody().toString() );
