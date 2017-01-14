@@ -170,7 +170,11 @@ public class Routing {
     }
 
     public int calculateBikesInStationForTime(StationPrediction stationPrediction, double seconds) {
-        return (int) Math.nextDown(stationPrediction.getBikes() + stationPrediction.getTrend() * seconds / 3600.0);
+        System.out.println(stationPrediction.getStationName() + " Bikes: " + stationPrediction.getBikes() + " Trend: " + stationPrediction.getTrend());
+        System.out.println("In " + seconds + "; DEBUG: "+ seconds / 3600.0);
+        int bikes = (int) Math.nextDown(stationPrediction.getBikes() + stationPrediction.getTrend() * seconds / 3600.0);
+        System.out.println("Bikes at: " + bikes);
+        return bikes;
     }
 
     public List<RoutingAnswer> routing(String origin, String destination) throws IOException, UnirestException, NullPointerException {
@@ -214,6 +218,7 @@ public class Routing {
                     int bikes = calculateBikesInStationForTime(prediction.getPrediction().get(currentTupel.getStationStart().getName()), startToFirst.getRoutes().get(0).getLegs().get(0).getDuration().getValue());
                     // wenn genug räder vorhande
                     if (bikes > 2) { //genug räder? min. 3-5 zB
+                        System.out.println("This Station!");
                         notfound = false;
                         foundTupel = currentTupel;
                     }
